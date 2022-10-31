@@ -30,6 +30,22 @@ class GenreSuggestionsHome(ListView):
     model = SuggestedGenre
 
 
+    def get(self, request, *args, **kwargs):
+        min_vote = request.GET.get("minimum_gen_vote")
+        # If the minimum vote was modified, it'll read that and change as needed.
+        if min_vote:
+            SuggestedGenre.minimum_votes_genres = min_vote
+        print(min_vote)
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        context["minimum_votes_get"] = SuggestedGenre.minimum_votes_genres
+        return context
+
+
 @method_decorator(login_required, name="dispatch")
 class ApproveSuggestion(View):
     """approve a suggestion"""

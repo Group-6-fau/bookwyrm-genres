@@ -35,6 +35,8 @@ class SuggestedGenre(models.Model):
     name = fields.CharField(max_length=40)
     description = fields.CharField(max_length=500)
     votes = fields.IntegerField(default = 1)
+
+    minimum_votes_genres = 50
     
     def __str__(self):
         return self.name
