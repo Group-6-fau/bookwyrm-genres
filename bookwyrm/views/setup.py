@@ -117,3 +117,10 @@ class CreateAdmin(View):
         """Create the initial minimum genre suggestion vote settings."""
         initial = models.MinimumVotesSetting.objects.create()
         initial.save()
+    
+
+def create_default_minimum_votes_setting(self, request):
+        """Create the initial minimum genre suggestion vote settings."""
+        initial = models.MinimumVotesSetting.objects.create()
+        initial.save()
+
