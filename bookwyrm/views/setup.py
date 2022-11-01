@@ -84,7 +84,6 @@ class CreateAdmin(View):
         self.create_default_genres(request)
         self.create_default_minimum_votes_setting(request)
 
-
         user = models.User.objects.create_superuser(
             username,
             form.data["email"],
@@ -113,9 +112,15 @@ class CreateAdmin(View):
                 genre_name, DEFAULT_GENRES[genre_name]
             )
             genre.save()
+
+    def create_default_minimum_votes_setting(self, request):
+        """Create the initial minimum genre suggestion vote settings."""
+        initial = models.MinimumVotesSetting.objects.create()
+        initial.save()
     
 
 def create_default_minimum_votes_setting(self, request):
         """Create the initial minimum genre suggestion vote settings."""
         initial = models.MinimumVotesSetting.objects.create()
         initial.save()
+
