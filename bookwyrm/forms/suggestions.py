@@ -25,12 +25,13 @@ class SuggestionForm(StyledForm):
             ),
         }
 
-class MinimumVotesForm(StyledForm):
+class BookSuggestionForm(StyledForm):
     class Meta:
-        model = models.MinimumVotesSetting
+        model = models.SuggestedBookGenre
 
-        fields = ['minimum_votes']
+        fields = ("genre", "book")
 
         widgets = {
-            'minimum_votes': forms.IntegerField(min_value=1, label_suffix='Minimum Votes')
+            "genre": forms.Select(choices=models.Genre.objects.all()),
+            "book": forms.Select(choices=models.Work.objects.all()),
         }

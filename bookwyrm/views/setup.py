@@ -111,3 +111,5 @@ class CreateAdmin(View):
                 genre_name, DEFAULT_GENRES[genre_name]
             )
             genre.save()
+    
+

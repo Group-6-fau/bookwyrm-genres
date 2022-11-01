@@ -1,12 +1,12 @@
 {% extends 'settings/layout.html' %}
 {% load i18n %}
-{% block title %}{% trans "Genre Suggestions" %}{% endblock %}
+{% block title %}{% trans "Book Genre Suggestions" %}{% endblock %}
 
 
 {% block edit-button %}
 
     <span class="is-hidden-mobile">
-        <form class="block" action="{% url 'settings-suggestions' %}" method="GET">
+        <form class="block" action="{% url 'settings-book-suggestions' %}" method="GET">
             <div class="field has-addons">
                 <p class="control pr-2">
                     {% trans "Minimum Votes: " %}
@@ -33,16 +33,20 @@
 {% block panel %}
 <nav class="tabs subtitle" aria-label="breadcrumbs">
     <ul>
-        <li class="is-active"><a href="{% url 'settings-suggestions' %}">{% trans "Genre Suggestions" %}</a></li>
-        <li><a href="{% url 'settings-book-suggestions' %}">{% trans "Book Suggestions" %}</a></li>
+        <li><a href="{% url 'settings-suggestions' %}">{% trans "Genre Suggestions" %}</a></li>
+        <li class="is-active"><a href="{% url 'settings-book-suggestions' %}">{% trans "Book Suggestions" %}</a></li>
     </ul>
 </nav>
 <div class="table-container block">
     <table class="table is-striped is-fullwidth">
         <tr>
-            {% url 'settings-suggestions' as url %}
+            {% url 'settings-book-suggestions' as url %}
             <th colspan="1">
                 {% trans "Genre" as text %}
+                {% include 'snippets/table-sort-header.html' with field="genre" sort=sort text=text %}
+            </th>
+            <th colspan="1">
+                {% trans "Book" as text %}
                 {% include 'snippets/table-sort-header.html' with field="genre" sort=sort text=text %}
             </th>
             <th colspan="1">
@@ -52,15 +56,18 @@
                 </dl>
             </th>
         </tr>
-        {% for genre in object_list %}
+        {% for suggestion in object_list %}
         <tr>
 
             <td class="overflow-wrap-anywhere pl-1">
-                <a href="{% url 'settings-suggestions-mod' genre.id %}">{{ genre.name }}</a>
+                <a href="{% url 'settings-book-suggestions-mod' suggestion.id %}">{{ suggestion.genre.genre_name }}</a>
+            </td>
+            <td class="overflow-wrap-anywhere pl-1">
+                <a href="{% url 'settings-book-suggestions-mod' suggestion.id %}">{{ suggestion.book.title }}</a>
             </td>
             <td>
                 <dl class="is-pulled-right pr-3">
-                    {{ genre.votes }}
+                    {{ suggestion.votes }}
                 </dl>
             </td>
         </tr>
