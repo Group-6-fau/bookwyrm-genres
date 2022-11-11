@@ -27,6 +27,57 @@ from .base_model import BookWyrmModel
 from . import fields
 
 
+class GenreManager(models.Manager):
+    def create_genre(self, genre_name, description):
+        genre = self.create(genre_name=genre_name, description=description)
+        return genre
+
+
+class Genre(models.Model):
+    """This is a model where we can define genres for books."""
+
+    genre_name = fields.CharField(max_length=40)
+    description = fields.CharField(max_length=500)
+    remote_id = fields.RemoteIdField(null=True, activitypub_field="id")
+    objects = GenreManager()
+
+    def __str__(self):
+        return self.genre_name
+
+    @property
+    def genre_desc(self):
+        return self.description
+
+    def get_remote_id(self):
+        """generate the url that resolves to the local object, without a slug"""
+        base_path = f"https://{DOMAIN}"
+        if hasattr(self, "user"):
+            base_path = f"{base_path}{self.user.local_path}"
+
+        model_name = type(self).__name__.lower()
+        return f"{base_path}/{model_name}/{self.id}"
+
+    @property
+    def local_path(self):
+        """how to link to this object in the local app, with a slug"""
+        local = self.get_remote_id().replace(f"https://{DOMAIN}", "")
+
+        name = None
+        if hasattr(self, "name_field"):
+            name = getattr(self, self.name_field)
+        elif hasattr(self, "name"):
+            name = self.name
+
+        if name:
+            slug = slugify(name)
+            local = f"{local}/s/{slug}"
+
+        return local
+
+    # def save(self, request, *args, **kwargs):
+    #    super(Genre, self).save(request, *args, **kwargs)
+
+
 class BookDataModel(ObjectMixin, BookWyrmModel):
     """fields shared between editable book data (books, works, authors)"""
 
@@ -108,6 +159,9 @@ class Book(BookDataModel):
     )
     series = fields.TextField(max_length=255, blank=True, null=True)
     series_number = fields.CharField(max_length=255, blank=True, null=True)
+
+    genres = models.ManyToManyField(Genre, blank=True)
+
     subjects = fields.ArrayField(
         models.CharField(max_length=255), blank=True, null=True, default=list
     )
@@ -252,6 +306,7 @@ class Work(OrderedCollectionPageMixin, Book):
             remote_id=f"{self.remote_id}/editions",
             **kwargs,
         )
+
 
     activity_serializer = activitypub.Work
     serialize_reverse_fields = [

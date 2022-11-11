@@ -6,6 +6,8 @@ from django.views.generic.base import TemplateView
 
 from bookwyrm import settings, views
 from bookwyrm.utils import regex
+from bookwyrm.views.search_genre import SearchGenre
+
 
 USER_PATH = rf"^user/(?P<username>{regex.USERNAME})"
 LOCAL_USER_PATH = rf"^user/(?P<username>{regex.LOCALNAME})"
@@ -24,11 +26,13 @@ STATUS_TYPES_STRING = "|".join(status_types)
 STATUS_PATH = rf"{USER_PATH}/({STATUS_TYPES_STRING})/(?P<status_id>\d+)"
 
 BOOK_PATH = r"^book/(?P<book_id>\d+)"
+GENRE_PATH = r"^genre/(?P<pk>\d+)"
 
 STREAMS = "|".join(s["key"] for s in settings.STREAMS)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("genresearch/", SearchGenre.as_view(), name="genre-search"),
     path(
         "robots.txt",
         TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
@@ -124,6 +128,66 @@ urlpatterns = [
     ),
     re_path(
         r"^settings/users/?$", views.UserAdminList.as_view(), name="settings-users"
+    ),
+    re_path(
+        r"^settings/genres/?$", views.ManageGenreHome.as_view(), name="settings-genres"
+    ),
+    re_path(
+        r"^settings/genres/add/?$",
+        views.CreateGenre.as_view(),
+        name="settings-genres-add",
+    ),
+    re_path(
+        r"^settings/genres/(?P<pk>\d+)/delete/?$",
+        views.RemoveGenre.as_view(),
+        name="settings-genres-remove",
+    ),
+    re_path(
+        r"^settings/genres/(?P<pk>\d+)/?$",
+        views.ModifyGenre.as_view(),
+        name="settings-genres-mod",
+    ),
+    re_path(
+        r"^settings/suggestions/?$", views.GenreSuggestionsHome.as_view(), name="settings-suggestions"
+    ),
+    re_path(
+        r"^settings/suggestions/approve/(?P<pk>\d+)/?$",
+        views.ApproveSuggestion.as_view(),
+        name="settings-suggestions-approve",
+    ),
+    re_path(
+        r"^settings/suggestions/(?P<pk>\d+)/delete/?$",
+        views.RemoveSuggestion.as_view(),
+        name="settings-suggestions-remove"
+    ),
+    re_path(
+        r"^settings/suggestions/(?P<pk>\d+)/?$",
+        views.ModifySuggestion.as_view(),
+        name="settings-suggestions-mod",
+    ),
+    re_path(
+        r"^settings/book-suggestions/?$", views.BookGenreSuggestionsHome.as_view(), name="settings-book-suggestions"
+    ),
+    re_path(
+        r"^settings/book-suggestions/approve/(?P<pk>\d+)/?$",
+        views.ApproveBookSuggestion.as_view(),
+        name="settings-book-suggestions-approve",
+    ),
+    re_path(
+        r"^settings/book-suggestions/(?P<pk>\d+)/delete/?$",
+        views.RemoveBookSuggestion.as_view(),
+        name="settings-book-suggestions-remove"
+    ),
+    re_path(
+        r"^genres/(?P<pk>\d+)/?$", views.GenreDetailView.as_view(), name="genre-view"
+    ),
+    re_path(
+        rf"{GENRE_PATH}(.json)?/?$", views.GenreDetailView.as_view(), name="genre-view"
+    ),
+    re_path(
+        rf"{GENRE_PATH}{regex.SLUG}/?$",
+        views.GenreDetailView.as_view(),
+        name="genre-view",
     ),
     re_path(
         r"^settings/users/(?P<status>(local|federated|deleted))\/?$",
@@ -429,6 +493,11 @@ urlpatterns = [
         views.reject_membership,
         name="reject-group-invitation",
     ),
+    # genres
+    re_path(r"^genres/?$", views.Genres.as_view(), name="genres"),
+    re_path(r"^genres/followed/?$", views.FollowedGenres.as_view(), name="followed-genres"),
+    re_path(r"^genres/follow/(?P<pk>\d+)/?$", views.Genres.FollowGenre.as_view(), name="genres-follow-genre"),
+    re_path(r"^genres/unfollow/(?P<pk>\d+)/?$", views.Genres.UnFollowGenre.as_view(), name="genres-unfollow-genre"),
     # lists
     re_path(rf"{USER_PATH}/lists/?$", views.UserLists.as_view(), name="user-lists"),
     re_path(r"^list/?$", views.Lists.as_view(), name="lists"),
@@ -444,6 +513,10 @@ urlpatterns = [
     ),
     re_path(r"^list/delete/(?P<list_id>\d+)/?$", views.delete_list, name="delete-list"),
     re_path(r"^list/add-book/?$", views.add_book, name="list-add-book"),
+
+    re_path(r"^list/genre-vote/?$", views.genre_vote, name="genre-vote"),
+    re_path(r"^list/genre-suggestion/?$", views.genre_suggestion, name="genre-suggestion"),
+
     re_path(
         r"^list/(?P<list_id>\d+)/remove/?$",
         views.remove_book,
@@ -576,6 +649,16 @@ urlpatterns = [
     ),
     re_path(r"^boost/(?P<status_id>\d+)/?$", views.Boost.as_view()),
     re_path(r"^unboost/(?P<status_id>\d+)/?$", views.Unboost.as_view()),
+    re_path(
+        r"^follow/(?P<pk>\d+)/?$",
+        views.interaction.FollowGenre.as_view(),
+        name="follow-genre",
+    ),
+    re_path(
+        r"^unfollow/(?P<pk>\d+)/?$",
+        views.interaction.UnFollowGenre.as_view(),
+        name="unfollow-genre",
+    ),
     # books
     re_path(rf"{BOOK_PATH}(.json)?/?$", views.Book.as_view(), name="book"),
     re_path(rf"{BOOK_PATH}{regex.SLUG}/?$", views.Book.as_view(), name="book"),

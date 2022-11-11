@@ -2,7 +2,7 @@
 import inspect
 import sys
 
-from .book import Book, Work, Edition, BookDataModel
+from .book import Book, Work, Edition, BookDataModel, Genre
 from .author import Author
 from .link import Link, FileLink, LinkDomain
 from .connector import Connector
@@ -13,6 +13,7 @@ from .list import List, ListItem
 from .status import Status, GeneratedNote, Comment, Quotation
 from .status import Review, ReviewRating
 from .status import Boost
+from .suggestions import SuggestedGenre, MinimumVotesSetting, SuggestedBookGenre
 from .attachment import Image
 from .favorite import Favorite
 from .readthrough import ReadThrough, ProgressUpdate, ProgressMode

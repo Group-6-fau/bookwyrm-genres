@@ -26,7 +26,16 @@ from .admin.reports import (
 from .admin.site import Site
 from .admin.themes import Themes, delete_theme
 from .admin.user_admin import UserAdmin, UserAdminList
-
+from .admin.genre_manage import ModifyGenre, ManageGenreHome, CreateGenre, RemoveGenre
+from .admin.genre_suggestions import (
+    GenreSuggestionsHome,
+    ModifySuggestion,
+    RemoveSuggestion,
+    ApproveSuggestion,
+    BookGenreSuggestionsHome,
+    RemoveBookSuggestion,
+    ApproveBookSuggestion,
+)
 # user preferences
 from .preferences.change_password import ChangePassword
 from .preferences.edit_user import EditUser
@@ -82,6 +91,9 @@ from .imports.manually_review import (
     delete_import_item,
 )
 
+# genres
+from  .genre.genre import Genres, FollowedGenres
+
 # lists
 from .list.curate import Curate
 from .list.embed import unsafe_embed_list
@@ -92,12 +104,15 @@ from .list.list import (
     save_list,
     unsave_list,
     delete_list,
+    genre_vote,
+    genre_suggestion,
     add_book,
     remove_book,
     set_book_position,
 )
 
 # misc views
+from .genre_pages import GenreDetailView
 from .author import Author, EditAuthor, update_author_from_remote
 from .directory import Directory
 from .discover import Discover
