@@ -7,7 +7,7 @@ from django.apps import apps
 from django.db import IntegrityError, transaction
 
 from bookwyrm.connectors import ConnectorException, get_data
-from bookwyrm.tasks import app
+from bookwyrm.tasks import app, MEDIUM
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +65,7 @@ class ActivityObject:
         dataclass, which it ignores. Any field in the dataclass is required or
         has a default value"""
         for field in fields(self):
+
             try:
                 value = kwargs[field.name]
                 if value in (None, MISSING, {}):
@@ -91,6 +92,9 @@ class ActivityObject:
                         f"Missing required field: {field.name}"
                     )
                 value = field.default
+                print("--------")
+                print(field.name)
+                print(value)
             setattr(self, field.name, value)
 
     # pylint: disable=too-many-locals,too-many-branches,too-many-arguments
@@ -202,7 +206,7 @@ class ActivityObject:
         return data
 
 
-@app.task(queue="medium_priority")
+@app.task(queue=MEDIUM)
 @transaction.atomic
 def set_related_field(
     model_name, origin_model_name, related_field_name, related_remote_id, data
