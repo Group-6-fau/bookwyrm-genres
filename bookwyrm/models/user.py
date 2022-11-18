@@ -21,6 +21,7 @@ from bookwyrm.preview_images import generate_user_preview_image_task
 from bookwyrm.settings import (DOMAIN, ENABLE_PREVIEW_IMAGES, LANGUAGES,
                                USE_HTTPS)
 from bookwyrm.signatures import create_key_pair
+
 from bookwyrm.tasks import LOW, app
 from bookwyrm.utils import regex
 
@@ -244,6 +245,15 @@ class User(OrderedCollectionPageMixin, AbstractUser):
         if viewer and viewer.is_authenticated:
             queryset = queryset.exclude(blocks=viewer)
         return queryset
+
+    @classmethod
+    def admins(cls):
+        """Get a queryset of the admins for this instance"""
+        return cls.objects.filter(
+            models.Q(groups__name__in=["moderator", "admin"])
+            | models.Q(is_superuser=True),
+            is_active=True,
+        ).distinct()
 
     def update_active_date(self):
         """this user is here! they are doing things!"""

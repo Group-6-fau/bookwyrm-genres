@@ -86,6 +86,9 @@ class SiteSettings(SiteModel):
     admin_email = models.EmailField(max_length=255, null=True, blank=True)
     footer_item = models.TextField(null=True, blank=True)
 
+    # controls
+    imports_enabled = models.BooleanField(default=True)
+
     field_tracker = FieldTracker(fields=["name", "instance_tagline", "logo"])
 
     @classmethod
@@ -181,7 +184,7 @@ class InviteRequest(BookWyrmModel):
     invite = models.ForeignKey(
         SiteInvite, on_delete=models.SET_NULL, null=True, blank=True
     )
-    answer = models.TextField(max_length=50, unique=False, null=True, blank=True)
+    answer = models.TextField(max_length=255, unique=False, null=True, blank=True)
     invite_sent = models.BooleanField(default=False)
     ignored = models.BooleanField(default=False)
 
