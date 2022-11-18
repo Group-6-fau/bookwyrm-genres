@@ -5,26 +5,40 @@ services:
     image: nginx:latest
     restart: unless-stopped
     ports:
-      - 1333:80
+      - 80:80
+      - 443:443
     depends_on:
       - web
     networks:
       - main
     volumes:
       - ./nginx:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/nginx/ssl
+      - ./certbot/data:/var/www/certbot
       - static_volume:/app/static
       - media_volume:/app/images
+  certbot:
+    image: certbot/certbot:latest
+    command: certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL} --agree-tos --no-eff-email -d ${DOMAIN} -d www.${DOMAIN}
+    #command: renew --webroot --webroot-path /var/www/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/logs:/var/log/letsencrypt
+      - ./certbot/data:/var/www/certbot
   db:
-    image: postgres
+    build: postgres-docker
     env_file: .env
+    entrypoint: /bookwyrm-entrypoint.sh
+    command: cron postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - backups:/backups
     networks:
       - main
   web:
     build: .
     env_file: .env
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn bookwyrm.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
       - static_volume:/app/static
@@ -105,6 +119,7 @@ services:
       - .:/app
 volumes:
   pgdata:
+  backups:
   static_volume:
   media_volume:
   redis_broker_data:
