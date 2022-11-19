@@ -81,7 +81,9 @@ def get_valid_genres(ext_gens):
             gen_exists = False
             continue
         
-        cate_list.append(models.Genre(genre_name=i["results"].name, name=i["results"].name, description=i["results"].description))
+        modified_name = i["results"].name + " -- External"
+
+        cate_list.append(models.Genre(genre_name=modified_name, name=i["results"].name, description=i["results"].description))
         #print(i["results"].description)
 
     return cate_list
