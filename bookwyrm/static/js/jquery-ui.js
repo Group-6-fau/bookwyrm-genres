@@ -9180,11 +9180,8 @@ jQuery.effects ||
             if (inst.input) inst.input.val(dateStr);
             this._updateAlternate(inst);
             var onSelect = this._get(inst, "onSelect");
-            if (onSelect)
-                onSelect.apply(inst.input ? inst.input[0] : null, [
-                    dateStr,
-                    inst,
-                ]); // trigger custom callback
+            if (onSelect) onSelect.apply(inst.input ? inst.input[0] : null, [dateStr, inst]);
+            // trigger custom callback
             else if (inst.input) inst.input.trigger("change"); // fire the change event
             if (inst.inline) this._updateDatepicker(inst);
             else {
