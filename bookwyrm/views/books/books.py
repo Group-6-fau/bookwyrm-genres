@@ -38,15 +38,17 @@ class Book(View):
         )
 
         try:
-            #Sometimes, this could fail! We don't want that now, right?
-            #If it fails--which it should never do outside python tests--we'll just make the genre suggestion list empty.
+            # Sometimes, this could fail! We don't want that now, right?
+            # If it fails--which it should never do outside python tests--we'll just make the genre suggestion list empty.
             book = get_object_or_404(models.Edition, id=book_id)
             work = book.parent_work
 
             work_genres = work.genres.all()
             work_genres_list = list(work_genres)
 
-            genre_list = models.Genre.objects.filter(~Q(genre_name__in=work_genres_list))
+            genre_list = models.Genre.objects.filter(
+                ~Q(genre_name__in=work_genres_list)
+            )
         except:
             genre_list = []
 

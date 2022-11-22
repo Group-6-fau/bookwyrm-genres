@@ -55,19 +55,20 @@ class AbstractMinimalConnector(ABC):
         print(self.search_url)
         print("--------------------------------------------")
         return f"{self.search_url}{query}"
-        
 
     def get_search_url_genre(self, genres, buttonSelection, external_categories):
         """format the query url"""
-        
+
         # search?q=&type=genre&search_buttons=search_or&genres=3&genres=5
         typeSelection = "&type=genre&search_buttons=" + buttonSelection
         genreExtension = ""
         for gen in genres:
-            genreExtension += "&genres=" + self.resolve_genre_id(models.Genre.objects.get(pk=gen), external_categories)
-        #print("---------------get_search_url---------------")
-        #print(self.search_url)
-        #print("--------------------------------------------")
+            genreExtension += "&genres=" + self.resolve_genre_id(
+                models.Genre.objects.get(pk=gen), external_categories
+            )
+        # print("---------------get_search_url---------------")
+        # print(self.search_url)
+        # print("--------------------------------------------")
         final_url = self.search_url + typeSelection + genreExtension
         return final_url
 
@@ -75,7 +76,7 @@ class AbstractMinimalConnector(ABC):
         """Try to match names with the two genres and set the ID appropriately for the connector we're trying to get these books from."""
         id = instance_genre.pk
         for cat in external_genres:
-            if(cat["results"].name == instance_genre.name):
+            if cat["results"].name == instance_genre.name:
                 return cat["results"].id[-1]
 
         return str(id)
@@ -85,17 +86,17 @@ class AbstractMinimalConnector(ABC):
         final_url_list = []
         tempCount = 0
         while True:
-            #Get only the first 20 categories. If it's less, it won't parse anything.
+            # Get only the first 20 categories. If it's less, it won't parse anything.
             tempCount = tempCount + 1
 
             genreExtension = "/" + str(tempCount)
             final_url = self.genres_url + genreExtension
             final_url_list.append(final_url)
-            if(tempCount > 29):
+            if tempCount > 29:
                 break
-        
-        #genreExtension = "/1"
-        #print(final_url_list)
+
+        # genreExtension = "/1"
+        # print(final_url_list)
         return final_url_list
 
     def process_search_response(self, query, data, min_confidence):

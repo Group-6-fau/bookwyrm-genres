@@ -18,8 +18,7 @@ from bookwyrm.connectors import ConnectorException, get_data
 from bookwyrm.models.shelf import Shelf
 from bookwyrm.models.status import Status
 from bookwyrm.preview_images import generate_user_preview_image_task
-from bookwyrm.settings import (DOMAIN, ENABLE_PREVIEW_IMAGES, LANGUAGES,
-                               USE_HTTPS)
+from bookwyrm.settings import DOMAIN, ENABLE_PREVIEW_IMAGES, LANGUAGES, USE_HTTPS
 from bookwyrm.signatures import create_key_pair
 
 from bookwyrm.tasks import LOW, app
@@ -442,7 +441,7 @@ class User(OrderedCollectionPageMixin, AbstractUser):
                 user=self,
                 editable=False,
             ).save(broadcast=False)
-    
+
     def raise_not_editable(self, viewer):
         """does this user have permission to edit this object? liable to be overwritten
         by models that inherit this base model class"""
@@ -503,7 +502,7 @@ def get_or_create_remote_server(domain, refresh=False):
         pass
 
     try:
-        #REPLACE WITH HTTPS
+        # REPLACE WITH HTTPS
         data = get_data(f"https://{domain}/.well-known/nodeinfo")
         try:
             nodeinfo_url = data.get("links")[0].get("href")
@@ -550,5 +549,3 @@ def preview_image(instance, *args, **kwargs):
 
     if len(changed_fields) > 0:
         generate_user_preview_image_task.delay(instance.id)
-
-

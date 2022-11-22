@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookwyrm', '0167_auto_20221031_2235'),
+        ("bookwyrm", "0167_auto_20221031_2235"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='connector',
-            name='genres_url',
-            field=models.CharField(default='https', max_length=255),
+            model_name="connector",
+            name="genres_url",
+            field=models.CharField(default="https", max_length=255),
             preserve_default=False,
         ),
     ]

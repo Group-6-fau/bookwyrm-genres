@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookwyrm', '0165_auto_20221028_2345'),
+        ("bookwyrm", "0165_auto_20221028_2345"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='genre',
-            name='name',
-            field=bookwyrm.models.fields.CharField(default=bookwyrm.models.fields.CharField(max_length=40), max_length=500),
+            model_name="genre",
+            name="name",
+            field=bookwyrm.models.fields.CharField(
+                default=bookwyrm.models.fields.CharField(max_length=40), max_length=500
+            ),
         ),
     ]

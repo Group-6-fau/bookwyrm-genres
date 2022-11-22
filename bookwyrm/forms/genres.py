@@ -6,8 +6,10 @@ from .custom_form import StyledForm
 
 class GenreForm(StyledForm):
     """Form for modifying an existing genre. Can be seen in the admin page."""
+
     class Meta:
         """Only the name and description can be modified."""
+
         model = models.Genre
 
         fields = ("genre_name", "description")

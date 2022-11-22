@@ -263,7 +263,6 @@ def genre_suggestion(request):
             suggestion.save()
             suggestion.autoApprove()
 
-
     else:
         genre_vote = suggestions.SuggestedGenre.objects.create(
             name=name, description=description

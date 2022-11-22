@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookwyrm', '0174_suggestedgenre_users'),
+        ("bookwyrm", "0174_suggestedgenre_users"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='suggestedbookgenre',
-            name='users',
+            model_name="suggestedbookgenre",
+            name="users",
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL),
         ),
     ]

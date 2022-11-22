@@ -55,7 +55,7 @@ class EditBook(View):
         remove_authors = request.POST.getlist("remove_authors")
         for author_id in remove_authors:
             book.authors.remove(author_id)
-        
+
         remove_genres = request.POST.getlist("remove_genres")
         work = book.parent_work
         for genre_id in remove_genres:
@@ -244,7 +244,7 @@ class ConfirmEditBook(View):
                 author_ids = findall(r"\d+", request.POST["authors"])
                 authors = models.Author.objects.filter(id__in=author_ids)
                 book.authors.add(*authors)
-            
+
             # get or create author as needed
             for i in range(int(request.POST.get("author-match-count", 0))):
                 match = request.POST.get(f"author_match-{i}")

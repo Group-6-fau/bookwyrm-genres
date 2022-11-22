@@ -35,7 +35,6 @@ class GenreDetailView(DetailView):
         """info about a genre"""
         if is_api_request(request):
 
-            
             return ActivitypubResponse(super().get_object().to_activity())
 
         return super().get(request, *args, **kwargs)

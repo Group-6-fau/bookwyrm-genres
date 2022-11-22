@@ -27,7 +27,7 @@ class Search(View):
         search_type = request.GET.get("type")
 
         if is_api_request(request):
-            if(search_type == "genre"):
+            if search_type == "genre":
                 return api_book_search_genres(request)
             return api_book_search(request)
 
@@ -37,7 +37,6 @@ class Search(View):
         print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         for i in ext_gens:
             print(i["results"].description)
-        
 
         query = request.GET.get("q")
         genre_query = request.GET.get("genres")
@@ -45,7 +44,7 @@ class Search(View):
             print("Exited because nothing was selected.")
             context = {}
             context["genre_tags"] = get_valid_genres(ext_gens)
-            #context["genre_tags"] = models.Genre.objects.all()
+            # context["genre_tags"] = models.Genre.objects.all()
             return TemplateResponse(request, "search/book.html", context)
 
         if query and not search_type:
@@ -62,10 +61,11 @@ class Search(View):
         if not search_type in endpoints:
             search_type = "book"
 
-        if(search_type == "genre"):
+        if search_type == "genre":
             return endpoints[search_type](request, ext_gens)
 
         return endpoints[search_type](request)
+
 
 def get_valid_genres(ext_gens):
     cate_list = list(models.Genre.objects.all())
@@ -73,20 +73,27 @@ def get_valid_genres(ext_gens):
     for i in ext_gens:
 
         for gen in cate_list:
-            if(gen.name == i["results"].name):
+            if gen.name == i["results"].name:
                 gen_exists = True
                 break
 
         if gen_exists:
             gen_exists = False
             continue
-        
+
         modified_name = i["results"].name + " -- External"
 
-        cate_list.append(models.Genre(genre_name=modified_name, name=i["results"].name, description=i["results"].description))
-        #print(i["results"].description)
+        cate_list.append(
+            models.Genre(
+                genre_name=modified_name,
+                name=i["results"].name,
+                description=i["results"].description,
+            )
+        )
+        # print(i["results"].description)
 
     return cate_list
+
 
 def api_book_search(request):
     """Return books via API response"""
@@ -100,7 +107,7 @@ def api_book_search(request):
     )
 
 
-#TODO: This can be refactored. We'll merge this into api_book_search later.
+# TODO: This can be refactored. We'll merge this into api_book_search later.
 def api_book_search_genres(request):
     """Return books via API response"""
     genre_list = request.GET.getlist("genres")
@@ -111,12 +118,12 @@ def api_book_search_genres(request):
         [format_search_result(r) for r in book_results[:10]], safe=False
     )
 
+
 def genre_search(request, external_genres):
     print("Entered the genre search function")
 
     if is_api_request(request):
         return api_book_search_genres(request)
-
 
     genre_list = request.GET.getlist("genres")
     buttonSelection = request.GET.get("search_buttons")

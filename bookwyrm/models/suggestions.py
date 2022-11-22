@@ -63,7 +63,6 @@ class SuggestedBookGenre(models.Model):
     book = models.ForeignKey("Work", on_delete=models.CASCADE, null=False)
     users = models.ManyToManyField(User, blank=False)
 
-
     def autoApprove(self):
         """If a certain category gets a certain number of votes, it will approve itself and create a new genre."""
         minimum_votes = MinimumVotesSetting.objects.get(id=1)
