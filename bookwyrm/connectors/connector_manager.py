@@ -122,8 +122,7 @@ async def async_connector_search(query, items, min_confidence):
 
 
 async def async_connector_genre_info(items):
-    """Try a number of requests to get our list of categories. Will return a tuple.
-    First element is a list of parsed genre info and the second element is the connector from where this was obtained."""
+    """Try a number of requests to get our list of categories."""
 
     timeout = aiohttp.ClientTimeout(total=SEARCH_TIMEOUT)
     async with aiohttp.ClientSession(timeout=timeout) as session:
@@ -263,14 +262,6 @@ def get_external_genres_specific_connector(connector):
         print("ELEMENT OF TUPLE ---------------- ")
         print(i)
     return fin_results
-
-
-def get_possible_genres():
-    pass
-
-
-def resolve_genre_ids():
-    pass
 
 
 def first_search_result(query, min_confidence=0.1):

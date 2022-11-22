@@ -50,53 +50,47 @@ class AbstractMinimalConnector(ABC):
         # NOTE: previously, we tried searching isbn and if that produces no results,
         # searched as free text. This, instead, only searches isbn if it's isbn-y
 
-        # search?q=&type=genre&search_buttons=search_or&genres=3&genres=5
-        print("---------------get_search_url---------------")
-        print(self.search_url)
-        print("--------------------------------------------")
         return f"{self.search_url}{query}"
 
-    def get_search_url_genre(self, genres, buttonSelection, external_categories):
+    def get_search_url_genre(self, genres, button_selection, external_categories):
         """format the query url"""
 
-        # search?q=&type=genre&search_buttons=search_or&genres=3&genres=5
-        typeSelection = "&type=genre&search_buttons=" + buttonSelection
-        genreExtension = ""
+        type_selection = "&type=genre&search_buttons=" + button_selection
+        genre_extension = ""
         for gen in genres:
-            genreExtension += "&genres=" + self.resolve_genre_id(
+            genre_extension += "&genres=" + self.resolve_genre_id(
                 models.Genre.objects.get(pk=gen), external_categories
             )
         # print("---------------get_search_url---------------")
         # print(self.search_url)
         # print("--------------------------------------------")
-        final_url = self.search_url + typeSelection + genreExtension
+        final_url = self.search_url + type_selection + genre_extension
         return final_url
 
     def resolve_genre_id(self, instance_genre, external_genres):
         """Try to match names with the two genres and set the ID appropriately for the connector we're trying to get these books from."""
-        id = instance_genre.pk
+        gen_id = instance_genre.pk
         for cat in external_genres:
             if cat["results"].name == instance_genre.name:
                 return cat["results"].id[-1]
 
-        return str(id)
+        return str(gen_id)
 
     def get_genrepage_url(self):
         """format the genre url"""
+        # I'm 99% sure there's a much better way of getting valid URLs but I don't really know how.
         final_url_list = []
-        tempCount = 0
+        temp_count = 0
         while True:
-            # Get only the first 20 categories. If it's less, it won't parse anything.
-            tempCount = tempCount + 1
+            # Get only the first 30 categories. If it's less, it won't parse anything.
+            temp_count = temp_count + 1
 
-            genreExtension = "/" + str(tempCount)
-            final_url = self.genres_url + genreExtension
+            genre_extension = "/" + str(temp_count)
+            final_url = self.genres_url + genre_extension
             final_url_list.append(final_url)
-            if tempCount > 29:
+            if temp_count > 29:
                 break
 
-        # genreExtension = "/1"
-        # print(final_url_list)
         return final_url_list
 
     def process_search_response(self, query, data, min_confidence):
