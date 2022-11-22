@@ -287,18 +287,18 @@
                 <form name="genre-vote" method="POST" action="{% url 'genre-vote' %}">
                     {% csrf_token %}
                     <div class="field has-addons is-small">
-                        <p class="control">
+                        <div class="control">
                             <div class="select is-small">
-                                <select name="genre" cols="None" rows="None" class="select" id="id_description_{{ book.id }}">
+                                <select name="genre" class="select" id="id_description_{{ book.id }}">
                                     {% for i in genre_list %}<br/>
                                         <option value="{{ i.id }}">{{ i.genre_name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                        </p>
-                        <p class="control">
+                        </div>
+                        <div class="control">
                             <button type="submit" class="button is-link is-small">{% trans "Suggest" %}</button>
-                        </p>
+                        </div>
                         <input type="hidden" name="book_id" value="{{ book.id }}">
                     </div>
                 </form>

@@ -314,7 +314,7 @@ USE_TZ = True
 
 agent = requests.utils.default_user_agent()
 #REPLACE WITH HTTPS
-USER_AGENT = f"{agent} (BookWyrm/{VERSION}; +http://{DOMAIN}/)"
+USER_AGENT = f"{agent} (BookWyrm/{VERSION}; +https://{DOMAIN}/)"
 
 # Imagekit generated thumbnails
 ENABLE_THUMBNAIL_GENERATION = env.bool("ENABLE_THUMBNAIL_GENERATION", False)

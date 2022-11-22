@@ -91,7 +91,7 @@ class AbstractMinimalConnector(ABC):
             genreExtension = "/" + str(tempCount)
             final_url = self.genres_url + genreExtension
             final_url_list.append(final_url)
-            if(tempCount > 19):
+            if(tempCount > 29):
                 break
         
         #genreExtension = "/1"
