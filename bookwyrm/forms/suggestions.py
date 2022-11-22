@@ -8,8 +8,10 @@ from .custom_form import StyledForm
 
 class SuggestionForm(StyledForm):
     """Form to suggest a genre."""
+
     class Meta:
         """Only a couple of fields we want."""
+
         model = models.SuggestedGenre
 
         fields = ["name", "description"]

@@ -40,7 +40,7 @@ class CreateGenre(CreateView):
 
 class RemoveGenre(DeleteView):
     "Page for removing a genre."
-    
+
     template_name = "settings/genres/genre_delete.html"
     model = Genre
     success_url = reverse_lazy("settings-genres")

@@ -69,7 +69,7 @@ class Search(View):
 
 def get_valid_genres(ext_gens):
     """We want to try to get genres from other instances that we don't have.
-       Filters out genres we already have so there's no duplicates."""
+    Filters out genres we already have so there's no duplicates."""
     cate_list = list(models.Genre.objects.all())
     gen_exists = False
     for i in ext_gens:
@@ -128,17 +128,15 @@ def genre_search(request, external_genres):
         return api_book_search_genres(request)
 
     genre_list = request.GET.getlist("genres")
-    buttonSelection = request.GET.get("search_buttons")
+    button_selection = request.GET.get("search_buttons")
     search_remote = request.GET.get("remote", False) and request.user.is_authenticated
 
     gen_query = request.GET.get("genres")
     query = request.GET.get("q")
     query = isbn_check(query)
 
-    print(buttonSelection)
-    # local_results = models.Edition.objects.all()
     min_confidence = request.GET.get("min_confidence", 0)
-    local_results = search_genre(genre_list, buttonSelection)
+    local_results = search_genre(genre_list, button_selection)
 
     paginated = Paginator(local_results, PAGE_LENGTH)
     page = paginated.get_page(request.GET.get("page"))
@@ -146,7 +144,7 @@ def genre_search(request, external_genres):
         "genre_tags": models.Genre.objects.all(),
         "gen_query": gen_query,
         "gen_list": genre_list,
-        "btn_select": buttonSelection,
+        "btn_select": button_selection,
         "query": query,
         "results": page,
         "remote": search_remote,
@@ -159,7 +157,7 @@ def genre_search(request, external_genres):
     if request.user.is_authenticated:
         print("Calling the remote results for genres.")
         data["remote_results"] = connector_manager.search_genre(
-            genre_list, buttonSelection, external_genres, min_confidence=min_confidence
+            genre_list, button_selection, external_genres, min_confidence=min_confidence
         )
         data["remote"] = True
     return TemplateResponse(request, "search/book.html", data)

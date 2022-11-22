@@ -35,7 +35,7 @@ def search(query, min_confidence=0, filters=None, return_first=False):
 
 
 def search_genre(active_genres, search_active_option):
-    """Get our genre list and put them on the page. If the user made a query, also display the books."""
+    """Get our genre list and put them on the page."""
 
     # Check if there's actually a genre selected.
     if len(active_genres):
@@ -75,6 +75,7 @@ def search_genre(active_genres, search_active_option):
 
 
 def get_first_edition_gen(results):
+    """I forgot what this did."""
     list_result = []
     for work in results:
         try:
