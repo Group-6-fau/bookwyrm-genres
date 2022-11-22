@@ -4,12 +4,8 @@ from uuid import uuid4
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from django.db.models import Avg, Q
-from django.template import loader
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, get_list_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.views import View
 from django.views.decorators.http import require_POST
@@ -20,7 +16,6 @@ from bookwyrm.connectors import connector_manager, ConnectorException
 from bookwyrm.connectors.abstract_connector import get_image
 from bookwyrm.settings import PAGE_LENGTH
 from bookwyrm.views.helpers import is_api_request, maybe_redirect_local_path
-from bookwyrm.forms.forms import VoteForm
 from bookwyrm.models import suggestions
 
 
@@ -48,10 +43,10 @@ class Book(View):
             book = get_object_or_404(models.Edition, id=book_id)
             work = book.parent_work
 
-            we = work.genres.all()
-            w = list(we)
+            work_genres = work.genres.all()
+            work_genres_list = list(work_genres)
 
-            genre_list = models.Genre.objects.filter(~Q(genre_name__in=w))
+            genre_list = models.Genre.objects.filter(~Q(genre_name__in=work_genres_list))
         except:
             genre_list = []
 
