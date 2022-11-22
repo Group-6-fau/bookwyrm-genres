@@ -177,7 +177,7 @@ def search(query, min_confidence=0.1, return_first=False):
 
 
 def search_genre(
-    genres, buttonSelection, external_categories, min_confidence=0.1, return_first=False
+    genres, button_selection, external_categories, min_confidence=0.1, return_first=False
 ):
     """find books based on their genre"""
     if not genres:
@@ -195,13 +195,12 @@ def search_genre(
             print(i["results"].description)
         print("#######################^^^^^^^^^^^^^^^^^^^")
         # get the search url from the connector before sending
-        url = connector.get_search_url_genre(genres, buttonSelection, valid_categories)
+        url = connector.get_search_url_genre(genres, button_selection, valid_categories)
         try:
             raise_not_valid_url(url)
         except ConnectorException:
             # if this URL is invalid we should skip it and move on
             logger.info("Request denied to blocked domain: %s", url)
-            print("---------------This URL is NOT valid---------------")
             continue
         # print("---------------This URL is valid---------------")
         # print(url)

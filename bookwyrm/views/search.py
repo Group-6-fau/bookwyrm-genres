@@ -68,6 +68,8 @@ class Search(View):
 
 
 def get_valid_genres(ext_gens):
+    """We want to try to get genres from other instances that we don't have.
+       Filters out genres we already have so there's no duplicates."""
     cate_list = list(models.Genre.objects.all())
     gen_exists = False
     for i in ext_gens:
@@ -111,9 +113,9 @@ def api_book_search(request):
 def api_book_search_genres(request):
     """Return books via API response"""
     genre_list = request.GET.getlist("genres")
-    buttonSelection = request.GET.get("search_buttons")
+    button_selection = request.GET.get("search_buttons")
     # only return local book results via json so we don't cascade
-    book_results = search_genre(genre_list, buttonSelection)
+    book_results = search_genre(genre_list, button_selection)
     return JsonResponse(
         [format_search_result(r) for r in book_results[:10]], safe=False
     )

@@ -1,29 +1,12 @@
-import re
-
-from django.contrib.postgres.search import SearchVectorField
-from django.contrib.postgres.indexes import GinIndex
-from django.core.cache import cache
-from django.core.cache.utils import make_template_fragment_key
-from django.db import models, transaction
-from django.db.models import Prefetch, Q
-from django.dispatch import receiver
+"""Models for anything related to suggestion. Either suggesting
+   a genre for a book or a genre itself."""
+from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from django.db.models.signals import post_migrate
-import bookwyrm
 
-
-from bookwyrm.preview_images import generate_edition_preview_image_task
-from bookwyrm.settings import (
-    DOMAIN,
-    DEFAULT_LANGUAGE,
-    ENABLE_PREVIEW_IMAGES,
-    ENABLE_THUMBNAIL_GENERATION,
-)
 
 from .book import Genre, Edition
 from .user import User
-from .activitypub_mixin import OrderedCollectionPageMixin, ObjectMixin
-from .base_model import BookWyrmModel
 from . import fields
 
 # This will be a local class, always. Nothing to do with ActivityPub.
@@ -44,7 +27,7 @@ class SuggestedGenre(models.Model):
     def __str__(self):
         return self.name
 
-    def autoApprove(self):
+    def auto_approve(self):
         """If a certain category gets a certain number of votes, it will approve itself and create a new genre."""
         minimum_votes = MinimumVotesSetting.objects.get(id=1)
 
@@ -63,7 +46,7 @@ class SuggestedBookGenre(models.Model):
     book = models.ForeignKey("Work", on_delete=models.CASCADE, null=False)
     users = models.ManyToManyField(User, blank=False)
 
-    def autoApprove(self):
+    def auto_approve(self):
         """If a certain category gets a certain number of votes, it will approve itself and create a new genre."""
         minimum_votes = MinimumVotesSetting.objects.get(id=1)
 
