@@ -7,13 +7,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookwyrm', '0171_merge_20221113_1722'),
+        ("bookwyrm", "0171_merge_20221113_1722"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='genre',
-            name='genre_name',
+            model_name="genre",
+            name="genre_name",
             field=bookwyrm.models.fields.CharField(max_length=500),
         ),
     ]

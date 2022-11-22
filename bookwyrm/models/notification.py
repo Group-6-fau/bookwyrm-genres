@@ -142,7 +142,7 @@ def genre_update(sender, instance, action, pk_set, reverse, **kwargs):
             genre = Genre.objects.get(pk=key)
             users = User.objects.filter(followed_genres=genre)
             if isinstance(instance, Work):
-                book = instance;
+                book = instance
             else:
                 return
 
