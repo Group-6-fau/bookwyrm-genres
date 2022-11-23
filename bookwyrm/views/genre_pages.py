@@ -11,13 +11,13 @@ from bookwyrm.models.book import Genre, Work
 
 
 class GenreDetailView(DetailView):
+    """View for an individual genre's page"""
+
     template_name = "genre/genre_detail_page.html"
     model = Genre
 
     def post(self, request):
         """Get the genres the user has selected."""
-
-        # buttonSelection = request.POST.get("search_buttons")
         context = self.get_context_data()
         return render(request, self.template_name, context)
 

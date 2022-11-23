@@ -10,8 +10,8 @@ from django.db import models, transaction
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from model_utils import FieldTracker
 from django.core.exceptions import PermissionDenied
+from model_utils import FieldTracker
 
 from bookwyrm import activitypub
 from bookwyrm.connectors import ConnectorException, get_data
@@ -304,12 +304,16 @@ class User(OrderedCollectionPageMixin, AbstractUser):
             **kwargs,
         )
 
-    def follow_genre(self, *args, **kwargs):
+    def follow_genre(self):
+        """follow a genre"""
+        # pylint: disable=undefined-variable
         genre = Genre.objects.get(id=genre_id)
         if genre not in self.followed_genres:
             self.followed_genres.add(genre)
 
-    def unfollow_genre(self, *args, **kwargs):
+    def unfollow_genre(self):
+        """unfollow a genre"""
+        # pylint: disable=undefined-variable
         genre = Genre.objects.get(id=genre_id)
         if genre in self.followed_genres:
             self.followed_genres.remove(genre)

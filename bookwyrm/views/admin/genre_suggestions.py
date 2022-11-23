@@ -35,9 +35,8 @@ class GenreSuggestionsHome(ListView):
             else:
                 ordering = order
             return ordering
-        else:
-            ordering = ["name"]
-            return ordering
+        ordering = ["name"]
+        return ordering
 
     def get(self, request, *args, **kwargs):
         min_vote = request.GET.get("minimum_gen_vote")
@@ -54,9 +53,9 @@ class GenreSuggestionsHome(ListView):
         if not MinimumVotesSetting.objects.all().exists():
             MinimumVotesSetting.objects.create()
 
-        VotesSetting = MinimumVotesSetting.objects.get(id=1)
+        votes_setting = MinimumVotesSetting.objects.get(id=1)
         context = super().get_context_data(**kwargs)
-        context["minimum_votes_get"] = VotesSetting.minimum_genre_votes
+        context["minimum_votes_get"] = votes_setting.minimum_genre_votes
         return context
 
 
@@ -64,10 +63,13 @@ class GenreSuggestionsHome(ListView):
 class ApproveSuggestion(View):
     """approve a genre suggestion"""
 
-    def post(self, request, suggestion_pk):
+    # pylint: disable=invalid-name
+    # pylint: disable=no-self-use
+    # pylint: disable=unused-argument
+    def post(self, request, pk):
         """approve a genre"""
 
-        suggestion = SuggestedGenre.objects.get(id=suggestion_pk)
+        suggestion = SuggestedGenre.objects.get(id=pk)
         genre = Genre.objects.create_genre(suggestion.name, suggestion.description)
         genre.save()
         suggestion.delete()
@@ -106,17 +108,16 @@ class BookGenreSuggestionsHome(ListView):
             else:
                 ordering = order
             return ordering
-        else:
-            ordering = ["genre__genre_name"]
-            return ordering
+        ordering = ["genre__genre_name"]
+        return ordering
 
     def get(self, request, *args, **kwargs):
         min_vote = request.GET.get("minimum_gen_vote")
         # If the minimum vote was modified, it'll read that and change as needed.
         if min_vote:
-            VotesSetting = MinimumVotesSetting.objects.get(id=1)
-            VotesSetting.minimum_book_votes = min_vote
-            VotesSetting.save()
+            votes_setting = MinimumVotesSetting.objects.get(id=1)
+            votes_setting.minimum_book_votes = min_vote
+            votes_setting.save()
         print(min_vote)
 
         return super().get(request, *args, **kwargs)
@@ -125,9 +126,9 @@ class BookGenreSuggestionsHome(ListView):
         if not MinimumVotesSetting.objects.all().exists():
             MinimumVotesSetting.objects.create()
 
-        VotesSetting = MinimumVotesSetting.objects.get(id=1)
+        votes_setting = MinimumVotesSetting.objects.get(id=1)
         context = super().get_context_data(**kwargs)
-        context["minimum_votes_get"] = VotesSetting.minimum_book_votes
+        context["minimum_votes_get"] = votes_setting.minimum_book_votes
         return context
 
 
@@ -135,6 +136,9 @@ class BookGenreSuggestionsHome(ListView):
 class ApproveBookSuggestion(View):
     """approve a book genre suggestion"""
 
+    # pylint: disable=invalid-name
+    # pylint: disable=no-self-use
+    # pylint: disable=unused-argument
     def post(self, request, pk):
         """approve a genre"""
 

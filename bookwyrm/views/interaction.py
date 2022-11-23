@@ -67,6 +67,7 @@ class FollowGenre(View):
 class UnFollowGenre(View):
     """unfollow a genre"""
 
+    # pylint: disable=invalid-name
     def post(self, request, pk):
         """unlike a status"""
         genre = models.Genre.objects.get(id=pk)
