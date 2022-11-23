@@ -41,10 +41,8 @@ class Book(View):
             # Sometimes, this could fail! We don't want that now, right?
             # If it fails--which it should never do outside python tests--we'll just make the genre suggestion list empty.
             book = get_object_or_404(models.Edition, id=book_id)
-            work = book.parent_work
 
-            work_genres = work.genres.all()
-            work_genres_list = list(work_genres)
+            work_genres_list = list(book.parent_work.genres.all())
 
             genre_list = models.Genre.objects.filter(
                 ~Q(genre_name__in=work_genres_list)
@@ -202,9 +200,9 @@ def genre_vote(request):
     """genre vote"""
     genres = request.POST.get("genres")
 
-    genre_vote = suggestions.SuggestedBookGenre(genre=genres)
+    int_genre_vote = suggestions.SuggestedBookGenre(genre=genres)
 
-    genre_vote.save()
+    int_genre_vote.save()
 
     book = get_object_or_404(models.Edition, id=request.POST.get("book_id"))
 

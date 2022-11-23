@@ -61,9 +61,6 @@ class Search(View):
         if not search_type in endpoints:
             search_type = "book"
 
-        if search_type == "genre":
-            return endpoints[search_type](request, ext_gens)
-
         return endpoints[search_type](request)
 
 
@@ -121,7 +118,9 @@ def api_book_search_genres(request):
     )
 
 
-def genre_search(request, external_genres):
+def genre_search(request):
+    """The main course.
+    Look for books based on genres."""
     print("Entered the genre search function")
 
     if is_api_request(request):
@@ -157,7 +156,7 @@ def genre_search(request, external_genres):
     if request.user.is_authenticated:
         print("Calling the remote results for genres.")
         data["remote_results"] = connector_manager.search_genre(
-            genre_list, button_selection, external_genres, min_confidence=min_confidence
+            genre_list, button_selection, min_confidence=min_confidence
         )
         data["remote"] = True
     return TemplateResponse(request, "search/book.html", data)

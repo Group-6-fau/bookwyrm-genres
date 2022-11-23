@@ -1,7 +1,4 @@
 """All the views that lets us modify genres."""
-from bookwyrm.models.book import Genre
-from bookwyrm.forms import GenreForm
-
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -9,6 +6,9 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
+
+from bookwyrm.models.book import Genre
+from bookwyrm.forms import GenreForm
 
 
 class ManageGenreHome(ListView):

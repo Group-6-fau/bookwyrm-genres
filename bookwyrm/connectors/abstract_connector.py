@@ -58,7 +58,7 @@ class AbstractMinimalConnector(ABC):
         type_selection = "&type=genre&search_buttons=" + button_selection
         genre_extension = ""
         for gen in genres:
-            genre_extension += "&genres=" + self.resolve_genre_id(
+            genre_extension += "&genres=" + resolve_genre_id(
                 models.Genre.objects.get(pk=gen), external_categories
             )
         # print("---------------get_search_url---------------")
@@ -67,18 +67,10 @@ class AbstractMinimalConnector(ABC):
         final_url = self.search_url + type_selection + genre_extension
         return final_url
 
-    def resolve_genre_id(self, instance_genre, external_genres):
-        """Try to match names with the two genres and set the ID appropriately for the connector we're trying to get these books from."""
-        gen_id = instance_genre.pk
-        for cat in external_genres:
-            if cat["results"].name == instance_genre.name:
-                return cat["results"].id[-1]
-
-        return str(gen_id)
-
     def get_genrepage_url(self):
         """format the genre url"""
-        # I'm 99% sure there's a much better way of getting valid URLs but I don't really know how.
+        # I'm 99% sure there's a much better
+        # way of getting valid URLs but I don't really know how.
         final_url_list = []
         temp_count = 0
         while True:
@@ -250,6 +242,17 @@ class AbstractConnector(AbstractMinimalConnector):
     @abstractmethod
     def expand_book_data(self, book):
         """get more info on a book"""
+
+
+def resolve_genre_id(instance_genre, external_genres):
+    """Try to match names with the two genres and set the ID
+    appropriately for the connector we're trying to get these books from."""
+    gen_id = instance_genre.pk
+    for cat in external_genres:
+        if cat["results"].name == instance_genre.name:
+            return cat["results"].id[-1]
+
+    return str(gen_id)
 
 
 def dict_from_mappings(data, mappings):

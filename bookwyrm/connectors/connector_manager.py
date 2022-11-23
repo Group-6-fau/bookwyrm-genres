@@ -179,7 +179,6 @@ def search(query, min_confidence=0.1, return_first=False):
 def search_genre(
     genres,
     button_selection,
-    external_categories,
     min_confidence=0.1,
     return_first=False,
 ):

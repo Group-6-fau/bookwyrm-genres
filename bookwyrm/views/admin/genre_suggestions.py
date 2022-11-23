@@ -1,3 +1,4 @@
+"""This view will handle all things related to genre suggestions."""
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect
@@ -42,9 +43,9 @@ class GenreSuggestionsHome(ListView):
         min_vote = request.GET.get("minimum_gen_vote")
         # If the minimum vote was modified, it'll read that and change as needed.
         if min_vote:
-            VotesSetting = MinimumVotesSetting.objects.get(id=1)
-            VotesSetting.minimum_genre_votes = min_vote
-            VotesSetting.save()
+            votes_setting = MinimumVotesSetting.objects.get(id=1)
+            votes_setting.minimum_genre_votes = min_vote
+            votes_setting.save()
         print(min_vote)
 
         return super().get(request, *args, **kwargs)
@@ -63,10 +64,10 @@ class GenreSuggestionsHome(ListView):
 class ApproveSuggestion(View):
     """approve a genre suggestion"""
 
-    def post(self, request, pk):
+    def post(self, request, suggestion_pk):
         """approve a genre"""
 
-        suggestion = SuggestedGenre.objects.get(id=pk)
+        suggestion = SuggestedGenre.objects.get(id=suggestion_pk)
         genre = Genre.objects.create_genre(suggestion.name, suggestion.description)
         genre.save()
         suggestion.delete()
@@ -83,6 +84,8 @@ class ModifySuggestion(UpdateView):
 
 
 class RemoveSuggestion(DeleteView):
+    """Page to remove/reject a suggestion."""
+
     template_name = "settings/genres/suggestion_delete.html"
     model = SuggestedGenre
     success_url = reverse_lazy("settings-suggestions")
@@ -147,6 +150,8 @@ class ApproveBookSuggestion(View):
 
 
 class RemoveBookSuggestion(DeleteView):
+    """Remove a suggested genre for a book."""
+
     template_name = "settings/genres/book_suggestion_delete.html"
     model = SuggestedBookGenre
     success_url = reverse_lazy("settings-book-suggestions")

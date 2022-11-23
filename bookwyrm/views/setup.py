@@ -81,7 +81,7 @@ class CreateAdmin(View):
         localname = form.data["localname"].strip()
         username = f"{localname}@{settings.DOMAIN}"
 
-        self.create_default_genres(request)
+        self.create_default_genres()
         if not models.MinimumVotesSetting.objects.all().exists():
             models.MinimumVotesSetting.objects.create()
 
@@ -106,9 +106,9 @@ class CreateAdmin(View):
         site.save()
         return redirect("settings-site")
 
-    def create_default_genres(self, request):
+    def create_default_genres(self):
         """Create the initial genres. Can be changed, of course."""
-        for genre_name in DEFAULT_GENRES:
+        for genre_name in DEFAULT_GENRES.items():
             genre = models.Genre.objects.create_genre(
                 genre_name, DEFAULT_GENRES[genre_name]
             )

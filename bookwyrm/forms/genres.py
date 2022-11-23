@@ -1,3 +1,4 @@
+"""Our form for letting us modify genres."""
 from django import forms
 
 from bookwyrm import models
