@@ -39,15 +39,15 @@ class Book(View):
 
         try:
             # Sometimes, this could fail! We don't want that now, right?
-            # If it fails--which it should never do outside python tests--we'll just make the genre suggestion list empty.
+            # If it fails--which it should never do outside python tests--we'll
+            # just make the genre suggestion list empty.
             book = get_object_or_404(models.Edition, id=book_id)
 
-            work_genres_list = list(book.parent_work.genres.all())
-
             genre_list = models.Genre.objects.filter(
-                ~Q(genre_name__in=work_genres_list)
+                ~Q(genre_name__in=list(book.parent_work.genres.all()))
             )
-        except:
+        except Exception as e:
+            print(e)
             genre_list = []
 
         # it's safe to use this OR because edition and work and subclasses of the same

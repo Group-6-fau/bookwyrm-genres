@@ -2,22 +2,23 @@
    a genre for a book or a genre itself."""
 from django.db import models
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 
 
 from .book import Genre, Edition
 from .user import User
 from . import fields
 
-# This will be a local class, always. Nothing to do with ActivityPub.
+
 class MinimumVotesSetting(models.Model):
+    """Establish a minimum vote"""
+
     minimum_genre_votes = models.IntegerField(default=10)
     minimum_book_votes = models.IntegerField(default=10)
 
 
 class SuggestedGenre(models.Model):
-    """When users suggest a genre, it will create an instance of this class and begin counting votes.
-    Restrictions on how many times a user can suggest a genre is still up for discussion."""
+    """Create an instance of this class
+    and begin counting votes."""
 
     name = fields.CharField(max_length=40)
     description = fields.CharField(max_length=500)
@@ -25,10 +26,11 @@ class SuggestedGenre(models.Model):
     users = models.ManyToManyField(User, blank=False)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def auto_approve(self):
-        """If a certain category gets a certain number of votes, it will approve itself and create a new genre."""
+        """If a certain category gets a certain number of votes,
+        it will approve itself and create a new genre."""
         minimum_votes = MinimumVotesSetting.objects.get(id=1)
 
         if self.votes >= minimum_votes.minimum_genre_votes:
@@ -38,8 +40,7 @@ class SuggestedGenre(models.Model):
 
 
 class SuggestedBookGenre(models.Model):
-    """When users suggest a genre, it will create an instance of this class and begin counting votes.
-    Restrictions on how many times a user can suggest a genre is still up for discussion."""
+    """Suggest a genre for a book."""
 
     genre = models.ForeignKey("Genre", on_delete=models.CASCADE, null=False)
     votes = fields.IntegerField(default=1)
@@ -47,7 +48,7 @@ class SuggestedBookGenre(models.Model):
     users = models.ManyToManyField(User, blank=False)
 
     def auto_approve(self):
-        """If a certain category gets a certain number of votes, it will approve itself and create a new genre."""
+        """Approve automatically on specific threshold"""
         minimum_votes = MinimumVotesSetting.objects.get(id=1)
 
         if self.votes >= minimum_votes.minimum_book_votes:

@@ -28,7 +28,10 @@ from . import fields
 
 
 class GenreManager(models.Manager):
+    """Special things to do for genres"""
+
     def create_genre(self, genre_name, description):
+        """Create a genre"""
         genre = self.create(genre_name=genre_name, description=description)
         return genre
 
@@ -45,15 +48,17 @@ class Genre(ObjectMixin, BookWyrmModel):
     objects = GenreManager()
 
     def __str__(self):
-        return self.genre_name
+        return str(self.genre_name)
 
     @property
     def genre_desc(self):
+        """Get the description"""
         return self.description
 
     def save(self, *args, **kwargs):
+        """Save it"""
         self.name = self.genre_name
-        super(Genre, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class BookDataModel(ObjectMixin, BookWyrmModel):

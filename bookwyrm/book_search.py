@@ -75,13 +75,14 @@ def search_genre(active_genres, search_active_option):
 
 
 def get_first_edition_gen(results):
-    """I forgot what this did."""
+    """Get the default edition of our books."""
     list_result = []
     for work in results:
         try:
             list_result.append(work.default_edition)
-        except:
+        except Exception as e:
             # Ignore it if something went wrong somehow.
+            print(e)
             continue
 
     return list_result
