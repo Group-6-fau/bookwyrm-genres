@@ -78,11 +78,12 @@ def get_first_edition_gen(results):
     """Get the default edition of our books."""
     list_result = []
     for work in results:
+        # pylint: disable=broad-except
         try:
             list_result.append(work.default_edition)
-        except Exception as e:
+        except Exception:
             # Ignore it if something went wrong somehow.
-            print(e)
+            # It shouldn't really matter.
             continue
 
     return list_result
@@ -200,6 +201,7 @@ class SearchResult:
 class GenreResult:
     """How our genre will look like when requesting it from another instance."""
 
+    # pylint: disable=invalid-name
     id: str
     genre_name: str
     description: str

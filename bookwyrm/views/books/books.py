@@ -23,6 +23,7 @@ from bookwyrm.models import suggestions
 class Book(View):
     """a book! this is the stuff"""
 
+    # pylint: disable=too-many-locals
     def get(self, request, book_id, **kwargs):
         """info about a book"""
         if is_api_request(request):
@@ -37,6 +38,7 @@ class Book(View):
             else False
         )
 
+        # pylint: disable=broad-except
         try:
             # Sometimes, this could fail! We don't want that now, right?
             # If it fails--which it should never do outside python tests--we'll
@@ -46,8 +48,11 @@ class Book(View):
             genre_list = models.Genre.objects.filter(
                 ~Q(genre_name__in=list(book.parent_work.genres.all()))
             )
-        except Exception as e:
-            print(e)
+        except models.Edition.DoesNotExist:
+            print("We couldn't find this object!")
+            genre_list = []
+        except Exception:
+            print("Something went VERY wrong!")
             genre_list = []
 
         # it's safe to use this OR because edition and work and subclasses of the same
