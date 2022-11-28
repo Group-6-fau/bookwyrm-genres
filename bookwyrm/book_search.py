@@ -35,8 +35,7 @@ def search(query, min_confidence=0, filters=None, return_first=False):
 
 
 def search_genre(active_genres, search_active_option):
-    """Get our genre list and put them on the page. If the user made a query, also display the books."""
-
+    """Get our genre list and put them on the page."""
 
     # Check if there's actually a genre selected.
     if len(active_genres):
@@ -50,19 +49,18 @@ def search_genre(active_genres, search_active_option):
             for gen in active_genres:
                 results = base_qs.filter(genres__pk__contains=gen)
             results = get_first_edition_gen(results)
-        #OR searching
+        # OR searching
         elif search_active_option == "search_or":
 
             for gen in active_genres:
                 print("Item successful captured!")
-                results.extend(models.Work.objects.filter(genres = gen))
+                results.extend(models.Work.objects.filter(genres=gen))
                 results = get_first_edition_gen(results)
-        #EXCLUDE searching
+        # EXCLUDE searching
         elif search_active_option == "search_exclude":
             base_qs = models.Work.objects.all()
-            results = models.Work.objects.exclude(genres__pk__in = active_genres)
+            results = models.Work.objects.exclude(genres__pk__in=active_genres)
             results = get_first_edition_gen(results)
-
 
         print("Printing this enter:" + active_genres[0])
         for item in results:
@@ -75,13 +73,17 @@ def search_genre(active_genres, search_active_option):
 
     return results
 
+
 def get_first_edition_gen(results):
+    """Get the default edition of our books."""
     list_result = []
     for work in results:
+        # pylint: disable=broad-except
         try:
             list_result.append(work.default_edition)
-        except:
-            #Ignore it if something went wrong somehow.
+        except Exception:
+            # Ignore it if something went wrong somehow.
+            # It shouldn't really matter.
             continue
 
     return list_result
@@ -175,7 +177,7 @@ class SearchResult:
     title: str
     key: str
     connector: object
-    #genres: str[str]
+    # genres: str[str]
     view_link: str = None
     author: str = None
     year: str = None
@@ -194,17 +196,18 @@ class SearchResult:
         del serialized["connector"]
         return serialized
 
+
 @dataclass
 class GenreResult:
     """How our genre will look like when requesting it from another instance."""
 
+    # pylint: disable=invalid-name
     id: str
     genre_name: str
     description: str
     name: str
     type: str
     connector: object
-
 
     def __repr__(self):
         # pylint: disable=consider-using-f-string

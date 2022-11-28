@@ -6,7 +6,6 @@ from django.views.generic.base import TemplateView
 
 from bookwyrm import settings, views
 from bookwyrm.utils import regex
-from bookwyrm.views.search_genre import SearchGenre
 
 
 USER_PATH = rf"^user/(?P<username>{regex.USERNAME})"
@@ -32,7 +31,6 @@ STREAMS = "|".join(s["key"] for s in settings.STREAMS)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("genresearch/", SearchGenre.as_view(), name="genre-search"),
     path(
         "robots.txt",
         TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
@@ -368,6 +366,16 @@ urlpatterns = [
         r"^settings/imports/(?P<import_id>\d+)/complete/?$",
         views.ImportList.as_view(),
         name="settings-imports-complete",
+    ),
+    re_path(
+        r"^settings/imports/disable/?$",
+        views.disable_imports,
+        name="settings-imports-disable",
+    ),
+    re_path(
+        r"^settings/imports/enable/?$",
+        views.enable_imports,
+        name="settings-imports-enable",
     ),
     re_path(
         r"^settings/celery/?$", views.CeleryStatus.as_view(), name="settings-celery"

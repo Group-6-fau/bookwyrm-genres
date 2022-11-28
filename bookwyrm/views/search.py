@@ -27,7 +27,7 @@ class Search(View):
         search_type = request.GET.get("type")
 
         if is_api_request(request):
-            if(search_type == "genre"):
+            if search_type == "genre":
                 return api_book_search_genres(request)
             return api_book_search(request)
 
@@ -37,7 +37,6 @@ class Search(View):
         print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         for i in ext_gens:
             print(i["results"].description)
-        
 
         query = request.GET.get("q")
         genre_query = request.GET.get("genres")
@@ -45,7 +44,7 @@ class Search(View):
             print("Exited because nothing was selected.")
             context = {}
             context["genre_tags"] = get_valid_genres(ext_gens)
-            #context["genre_tags"] = models.Genre.objects.all()
+            # context["genre_tags"] = models.Genre.objects.all()
             return TemplateResponse(request, "search/book.html", context)
 
         if query and not search_type:
@@ -62,29 +61,38 @@ class Search(View):
         if not search_type in endpoints:
             search_type = "book"
 
-        if(search_type == "genre"):
-            return endpoints[search_type](request, ext_gens)
-
         return endpoints[search_type](request)
 
+
 def get_valid_genres(ext_gens):
+    """We want to try to get genres from other instances that we don't have.
+    Filters out genres we already have so there's no duplicates."""
     cate_list = list(models.Genre.objects.all())
     gen_exists = False
     for i in ext_gens:
 
         for gen in cate_list:
-            if(gen.name == i["results"].name):
+            if gen.name == i["results"].name:
                 gen_exists = True
                 break
 
         if gen_exists:
             gen_exists = False
             continue
-        
-        cate_list.append(models.Genre(genre_name=i["results"].name, name=i["results"].name, description=i["results"].description))
-        #print(i["results"].description)
+
+        modified_name = i["results"].name + " -- External"
+
+        cate_list.append(
+            models.Genre(
+                genre_name=modified_name,
+                name=i["results"].name,
+                description=i["results"].description,
+            )
+        )
+        # print(i["results"].description)
 
     return cate_list
+
 
 def api_book_search(request):
     """Return books via API response"""
@@ -98,36 +106,36 @@ def api_book_search(request):
     )
 
 
-#TODO: This can be refactored. We'll merge this into api_book_search later.
+# TODO: This can be refactored. We'll merge this into api_book_search later.
 def api_book_search_genres(request):
     """Return books via API response"""
     genre_list = request.GET.getlist("genres")
-    buttonSelection = request.GET.get("search_buttons")
+    button_selection = request.GET.get("search_buttons")
     # only return local book results via json so we don't cascade
-    book_results = search_genre(genre_list, buttonSelection)
+    book_results = search_genre(genre_list, button_selection)
     return JsonResponse(
         [format_search_result(r) for r in book_results[:10]], safe=False
     )
 
-def genre_search(request, external_genres):
+
+def genre_search(request):
+    """The main course.
+    Look for books based on genres."""
     print("Entered the genre search function")
 
     if is_api_request(request):
         return api_book_search_genres(request)
 
-
     genre_list = request.GET.getlist("genres")
-    buttonSelection = request.GET.get("search_buttons")
+    button_selection = request.GET.get("search_buttons")
     search_remote = request.GET.get("remote", False) and request.user.is_authenticated
 
     gen_query = request.GET.get("genres")
     query = request.GET.get("q")
     query = isbn_check(query)
 
-    print(buttonSelection)
-    # local_results = models.Edition.objects.all()
     min_confidence = request.GET.get("min_confidence", 0)
-    local_results = search_genre(genre_list, buttonSelection)
+    local_results = search_genre(genre_list, button_selection)
 
     paginated = Paginator(local_results, PAGE_LENGTH)
     page = paginated.get_page(request.GET.get("page"))
@@ -135,7 +143,7 @@ def genre_search(request, external_genres):
         "genre_tags": models.Genre.objects.all(),
         "gen_query": gen_query,
         "gen_list": genre_list,
-        "btn_select": buttonSelection,
+        "btn_select": button_selection,
         "query": query,
         "results": page,
         "remote": search_remote,
@@ -148,7 +156,7 @@ def genre_search(request, external_genres):
     if request.user.is_authenticated:
         print("Calling the remote results for genres.")
         data["remote_results"] = connector_manager.search_genre(
-            genre_list, buttonSelection, external_genres, min_confidence=min_confidence
+            genre_list, button_selection, min_confidence=min_confidence
         )
         data["remote"] = True
     return TemplateResponse(request, "search/book.html", data)

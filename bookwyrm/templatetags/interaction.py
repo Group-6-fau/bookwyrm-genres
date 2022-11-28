@@ -10,6 +10,7 @@ register = template.Library()
 
 @register.filter(name="followed")
 def followed(user, genre):
+    """See which genres we're following"""
     return user.followed_genres.filter(genre_name=genre.genre_name).count() > 0
 
 
@@ -47,7 +48,7 @@ def get_relationship(context, user_object):
     """caches the relationship between the logged in user and another user"""
     user = context["request"].user
     return get_or_set(
-        f"relationship-{user.id}-{user_object.id}",
+        f"cached-relationship-{user.id}-{user_object.id}",
         get_relationship_name,
         user,
         user_object,

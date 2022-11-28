@@ -10,16 +10,15 @@ from django.db import models, transaction
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from model_utils import FieldTracker
 from django.core.exceptions import PermissionDenied
+from model_utils import FieldTracker
 
 from bookwyrm import activitypub
 from bookwyrm.connectors import ConnectorException, get_data
 from bookwyrm.models.shelf import Shelf
 from bookwyrm.models.status import Status
 from bookwyrm.preview_images import generate_user_preview_image_task
-from bookwyrm.settings import (DOMAIN, ENABLE_PREVIEW_IMAGES, LANGUAGES,
-                               USE_HTTPS)
+from bookwyrm.settings import DOMAIN, ENABLE_PREVIEW_IMAGES, LANGUAGES, USE_HTTPS
 from bookwyrm.signatures import create_key_pair
 
 from bookwyrm.tasks import LOW, app
@@ -246,6 +245,15 @@ class User(OrderedCollectionPageMixin, AbstractUser):
             queryset = queryset.exclude(blocks=viewer)
         return queryset
 
+    @classmethod
+    def admins(cls):
+        """Get a queryset of the admins for this instance"""
+        return cls.objects.filter(
+            models.Q(groups__name__in=["moderator", "admin"])
+            | models.Q(is_superuser=True),
+            is_active=True,
+        ).distinct()
+
     def update_active_date(self):
         """this user is here! they are doing things!"""
         self.last_active_date = timezone.now()
@@ -296,12 +304,16 @@ class User(OrderedCollectionPageMixin, AbstractUser):
             **kwargs,
         )
 
-    def follow_genre(self, *args, **kwargs):
+    def follow_genre(self):
+        """follow a genre"""
+        # pylint: disable=undefined-variable
         genre = Genre.objects.get(id=genre_id)
         if genre not in self.followed_genres:
             self.followed_genres.add(genre)
 
-    def unfollow_genre(self, *args, **kwargs):
+    def unfollow_genre(self):
+        """unfollow a genre"""
+        # pylint: disable=undefined-variable
         genre = Genre.objects.get(id=genre_id)
         if genre in self.followed_genres:
             self.followed_genres.remove(genre)
@@ -433,7 +445,7 @@ class User(OrderedCollectionPageMixin, AbstractUser):
                 user=self,
                 editable=False,
             ).save(broadcast=False)
-    
+
     def raise_not_editable(self, viewer):
         """does this user have permission to edit this object? liable to be overwritten
         by models that inherit this base model class"""
@@ -494,7 +506,6 @@ def get_or_create_remote_server(domain, refresh=False):
         pass
 
     try:
-        #REPLACE WITH HTTPS
         data = get_data(f"https://{domain}/.well-known/nodeinfo")
         try:
             nodeinfo_url = data.get("links")[0].get("href")
@@ -541,5 +552,3 @@ def preview_image(instance, *args, **kwargs):
 
     if len(changed_fields) > 0:
         generate_user_preview_image_task.delay(instance.id)
-
-

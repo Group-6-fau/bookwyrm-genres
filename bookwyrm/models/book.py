@@ -28,32 +28,37 @@ from . import fields
 
 
 class GenreManager(models.Manager):
+    """Special things to do for genres"""
+
     def create_genre(self, genre_name, description):
+        """Create a genre"""
         genre = self.create(genre_name=genre_name, description=description)
         return genre
 
 
 class Genre(ObjectMixin, BookWyrmModel):
     """This is a model where we can define genres for books."""
+
     genre_name = fields.CharField(max_length=500)
     description = fields.CharField(max_length=500)
 
-    name = fields.CharField(max_length=500, default = genre_name)
+    name = fields.CharField(max_length=500, default=genre_name)
 
     activity_serializer = activitypub.GenreData
     objects = GenreManager()
 
     def __str__(self):
-        return self.genre_name
+        return str(self.genre_name)
 
     @property
     def genre_desc(self):
+        """Get the description"""
         return self.description
 
-
     def save(self, *args, **kwargs):
+        """Save it"""
         self.name = self.genre_name
-        super(Genre, self).save( *args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class BookDataModel(ObjectMixin, BookWyrmModel):
@@ -237,7 +242,6 @@ class Book(BookDataModel):
 
     def get_remote_id(self):
         """editions and works both use "book" instead of model_name"""
-        #REPLACE WITH HTTPS
         return f"https://{DOMAIN}/book/{self.id}"
 
     def __repr__(self):

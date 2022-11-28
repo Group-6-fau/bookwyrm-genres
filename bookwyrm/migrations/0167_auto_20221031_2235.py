@@ -7,18 +7,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookwyrm', '0166_genre_name'),
+        ("bookwyrm", "0166_genre_name"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='genre',
-            name='genre_name',
+            model_name="genre",
+            name="genre_name",
             field=bookwyrm.models.fields.CharField(max_length=500),
         ),
         migrations.AlterField(
-            model_name='genre',
-            name='name',
-            field=bookwyrm.models.fields.CharField(default=bookwyrm.models.fields.CharField(max_length=500), max_length=500),
+            model_name="genre",
+            name="name",
+            field=bookwyrm.models.fields.CharField(
+                default=bookwyrm.models.fields.CharField(max_length=500), max_length=500
+            ),
         ),
     ]

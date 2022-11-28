@@ -1,0 +1,7 @@
+# JQuery
+bookwyrm/static/js/jquery-ui.css
+bookwyrm/static/js/jquery-1.8.3.css
+
+# Chosen
+bookwyrm/static/chosen/js/chosen.jquery.css
+bookwyrm/static/chosen/js/chosen.jquery.min.css

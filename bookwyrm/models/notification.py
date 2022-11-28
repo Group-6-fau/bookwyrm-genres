@@ -90,10 +90,9 @@ class Notification(BookWyrmModel):
         notification.read = False
         notification.save()
 
-    """Create genre notification - UPDATE"""
-
     @classmethod
     @transaction.atomic
+    # pylint: disable=unused-argument
     def notify_genre_update(cls, users, **kwargs):
         """Notify on genre activity"""
         notification = cls.objects.create(**kwargs)
@@ -132,21 +131,21 @@ class Notification(BookWyrmModel):
             notification.delete()
 
 
-"""Receiver for genre update - UPDATE"""
-
-
 @receiver(models.signals.m2m_changed, sender=Work.genres.through)
-def genre_update(sender, instance, action, pk_set, reverse, **kwargs):
+# pylint: disable=unused-argument
+def genre_update(sender, instance, action, pk_set, reverse, *args, **kwargs):
+    """a book got categorized to a genre you follow"""
     if action == "post_add":
         for key in pk_set:
             genre = Genre.objects.get(pk=key)
             users = User.objects.filter(followed_genres=genre)
             if isinstance(instance, Work):
-                book = instance;
+                book = instance
             else:
                 return
 
             for user in users:
+                # pylint: disable=too-many-function-args
                 Notification.notify_genre_update(
                     users,
                     user=user,

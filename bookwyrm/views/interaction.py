@@ -55,18 +55,19 @@ class Unfavorite(View):
 class FollowGenre(View):
     """follow a genre"""
 
-    def post(self, request, pk):
+    def post(self, request, gen_pk):
         """follow a genre"""
-        genre = models.Genre.objects.get(id=pk)
+        genre = models.Genre.objects.get(id=gen_pk)
         user = models.User.objects.get(id=request.user.id)
         user.followed_genres.add(genre)
-        return redirect("genre-view", pk=genre.id)
+        return redirect("genre-view", gen_pk=genre.id)
 
 
 @method_decorator(login_required, name="dispatch")
 class UnFollowGenre(View):
     """unfollow a genre"""
 
+    # pylint: disable=invalid-name
     def post(self, request, pk):
         """unlike a status"""
         genre = models.Genre.objects.get(id=pk)

@@ -56,6 +56,13 @@ class EditBook(View):
         for author_id in remove_authors:
             book.authors.remove(author_id)
 
+        remove_genres = request.POST.getlist("remove_genres")
+        work = book.parent_work
+        for genre_id in remove_genres:
+            for edition in work.editions.all():
+                edition.genres.remove(genre_id)
+            work.genres.remove(genre_id)
+
         book = form.save(request, commit=False)
 
         url = request.POST.get("cover-url")
@@ -282,6 +289,9 @@ class ConfirmEditBook(View):
 
             for author_id in request.POST.getlist("remove_authors"):
                 book.authors.remove(author_id)
+
+            for genre_id in request.POST.getlist("remove_genres"):
+                book.genres.remove(genre_id)
 
             # import cover, if requested
             url = request.POST.get("cover-url")
