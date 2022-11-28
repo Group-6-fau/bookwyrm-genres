@@ -84,6 +84,7 @@ def get_valid_genres(ext_gens):
 
         cate_list.append(
             models.Genre(
+                id=i["results"].id,
                 genre_name=modified_name,
                 name=i["results"].name,
                 description=i["results"].description,
