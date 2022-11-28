@@ -253,7 +253,7 @@ def resolve_genre_id(instance_genre, external_genres):
 
 def get_ext_gen_id(gen_url):
     gen_last_url = gen_url[-3]
-
+    print(gen_last_url)
     gen_id = ""
 
     for url_char in gen_last_url:
