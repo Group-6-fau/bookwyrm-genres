@@ -76,7 +76,6 @@ async def get_genres_info(session, url, connector):
             except aiohttp.client_exceptions.ContentTypeError as err:
                 logger.exception(err)
                 return
-            # test = connector.parse_genre_data(raw_data)
             return {
                 "connector": connector,
                 "results": connector.parse_genre_data(raw_data),

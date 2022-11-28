@@ -247,9 +247,21 @@ def resolve_genre_id(instance_genre, external_genres):
     gen_id = instance_genre.pk
     for cat in external_genres:
         if cat["results"].name == instance_genre.name:
-            return cat["results"].id[-1]
+            return get_ext_gen_id(cat["results"].id)
 
     return str(gen_id)
+
+def get_ext_gen_id(gen_url):
+    gen_last_url = gen_url[-3]
+
+    gen_id = ""
+
+    for url_char in gen_last_url:
+        if url_char.isdigit():
+            gen_id = gen_id + url_char
+
+    print(gen_id)
+    return gen_id
 
 
 def dict_from_mappings(data, mappings):
