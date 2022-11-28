@@ -40,7 +40,6 @@ class Search(View):
             print("Exited because nothing was selected.")
             context = {}
             context["genre_tags"] = local_gens
-            # context["genre_tags"] = models.Genre.objects.all()
             return TemplateResponse(request, "search/book.html", context)
 
         if query and not search_type:
