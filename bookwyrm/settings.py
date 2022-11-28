@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 env = Env()
 env.read_env()
 DOMAIN = env("DOMAIN")
-VERSION = "0.5.1"
+VERSION = "0.5.2"
 
 RELEASE_API = env(
     "RELEASE_API",
@@ -393,3 +393,7 @@ DEFAULT_GENRES = {
     "Political": "Stories that provide commentary on political events, systems, and theories through a narrative tone.",
     "Health & Fitness": "Exercises and other things one can do to keep their body healthy and fit.",
 }
+
+HTTP_X_FORWARDED_PROTO = env.bool("SECURE_PROXY_SSL_HEADER", False)
+if HTTP_X_FORWARDED_PROTO:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
