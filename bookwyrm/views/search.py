@@ -31,19 +31,15 @@ class Search(View):
                 return api_book_search_genres(request)
             return api_book_search(request)
 
-        ext_gens = connector_manager.get_external_genres()
-        print(str(len(ext_gens)))
-
-        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        for i in ext_gens:
-            print(i["results"].description)
+        local_gens = list(models.Genre.objects.all())
+        #ext_gens = connector_manager.get_external_genres()
 
         query = request.GET.get("q")
         genre_query = request.GET.get("genres")
         if not query and not genre_query:
             print("Exited because nothing was selected.")
             context = {}
-            context["genre_tags"] = get_valid_genres(ext_gens)
+            context["genre_tags"] = local_gens
             # context["genre_tags"] = models.Genre.objects.all()
             return TemplateResponse(request, "search/book.html", context)
 
@@ -64,14 +60,15 @@ class Search(View):
         return endpoints[search_type](request)
 
 
-def get_valid_genres(ext_gens):
+def get_valid_genres(ext_gens, local_gens):
+    # Note: I wasn't able to get this whole idea to work. For now, this remains unused.
     """We want to try to get genres from other instances that we don't have.
     Filters out genres we already have so there's no duplicates."""
-    cate_list = list(models.Genre.objects.all())
     gen_exists = False
+    final_list = local_gens
     for i in ext_gens:
 
-        for gen in cate_list:
+        for gen in local_gens:
             if gen.name == i["results"].name:
                 gen_exists = True
                 break
@@ -82,7 +79,7 @@ def get_valid_genres(ext_gens):
 
         modified_name = i["results"].name + " -- External"
 
-        cate_list.append(
+        final_list.append(
             models.Genre(
                 id=get_ext_gen_id(i["results"].id),
                 genre_name=modified_name,
@@ -91,7 +88,7 @@ def get_valid_genres(ext_gens):
             )
         )
 
-    return cate_list
+    return final_list
 
 def get_ext_gen_id(gen_url):
     """Try to get the genre ID from the url"""
