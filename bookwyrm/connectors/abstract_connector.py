@@ -252,7 +252,8 @@ def resolve_genre_id(instance_genre, external_genres):
     return str(gen_id)
 
 def get_ext_gen_id(gen_url):
-    gen_last_url = gen_url[-3]
+    """Try to get the genre ID from the url"""
+    gen_last_url = gen_url[-3:]
     print(gen_last_url)
     gen_id = ""
 
