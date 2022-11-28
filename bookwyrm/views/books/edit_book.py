@@ -290,9 +290,6 @@ class ConfirmEditBook(View):
             for author_id in request.POST.getlist("remove_authors"):
                 book.authors.remove(author_id)
 
-            for genre_id in request.POST.getlist("remove_genres"):
-                book.genres.remove(genre_id)
-
             # import cover, if requested
             url = request.POST.get("cover-url")
             if url:
