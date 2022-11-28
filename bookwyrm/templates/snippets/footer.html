@@ -3,9 +3,11 @@
 <footer class="footer">
     <div class="container">
         <div class="columns">
-            <div class="column is-2">
+
+            <div class="column is-one-fifth">
                 <p>
-                    <a href="{% url 'about' %}">{% blocktrans with site_name=site.name %}About {{ site_name }}{% endblocktrans %}</a>
+                <a href="{% url 'about' %}">{% blocktrans with site_name=site.name %}About {{ site_name }}{% endblocktrans %}</a>
+
                 </p>
                 {% if site.admin_email %}
                 <p>
@@ -48,7 +50,9 @@
                 </p>
             </div>
             {% if site.footer_item %}
-            <div class="column is-4">
+
+            <div class="column">
+
                 <p>{{ site.footer_item|safe }}</p>
             </div>
             {% endif %}
