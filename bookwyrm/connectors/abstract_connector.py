@@ -61,9 +61,6 @@ class AbstractMinimalConnector(ABC):
             genre_extension += "&genres=" + resolve_genre_id(
                 models.Genre.objects.get(pk=gen), external_categories
             )
-        # print("---------------get_search_url---------------")
-        # print(self.search_url)
-        # print("--------------------------------------------")
         final_url = self.search_url + type_selection + genre_extension
         return final_url
 
@@ -286,9 +283,7 @@ def get_data(url, params=None, timeout=settings.QUERY_TIMEOUT):
             timeout=timeout,
         )
     except RequestException as err:
-        print("##################################")
         logger.info(err)
-        print("##################################")
         raise ConnectorException(err)
 
     if not resp.ok:
@@ -296,9 +291,7 @@ def get_data(url, params=None, timeout=settings.QUERY_TIMEOUT):
     try:
         data = resp.json()
     except ValueError as err:
-        print("---------------------------------")
         logger.info(err)
-        print("---------------------------------")
         raise ConnectorException(err)
 
     return data

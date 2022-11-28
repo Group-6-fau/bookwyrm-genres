@@ -92,9 +92,6 @@ class ActivityObject:
                         f"Missing required field: {field.name}"
                     )
                 value = field.default
-                print("--------")
-                print(field.name)
-                print(value)
             setattr(self, field.name, value)
 
     # pylint: disable=too-many-locals,too-many-branches,too-many-arguments

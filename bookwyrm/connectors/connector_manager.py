@@ -34,13 +34,8 @@ async def get_results(session, url, min_confidence, query, connector):
     params = {"min_confidence": min_confidence}
     try:
         async with session.get(url, headers=headers, params=params) as response:
-            # print("-----------------------------------")
-            # print(headers)
-            # print(url)
-            # print("-----------------------------------")
             if not response.ok:
                 logger.info("Unable to connect to %s: %s", url, response.reason)
-                print("Unable to connect to %s: %s", url, response.reason)
                 return
 
             try:
@@ -48,9 +43,6 @@ async def get_results(session, url, min_confidence, query, connector):
             except aiohttp.client_exceptions.ContentTypeError as err:
                 logger.exception(err)
                 return
-            # print("-----------------------------------")
-            # print(raw_data)
-            # print("-----------------------------------")
             return {
                 "connector": connector,
                 "results": connector.process_search_response(
@@ -75,13 +67,8 @@ async def get_genres_info(session, url, connector):
     params = {"min_confidence": ""}
     try:
         async with session.get(url, headers=headers, params=params) as response:
-            # print("-----------------------------------")
-            # print(headers)
-            # print(url)
-            # print("-----------------------------------")
             if not response.ok:
                 logger.info("Unable to connect to %s: %s", url, response.reason)
-                print("Unable to connect to %s: %s", url, response.reason)
                 return
 
             try:
@@ -89,12 +76,7 @@ async def get_genres_info(session, url, connector):
             except aiohttp.client_exceptions.ContentTypeError as err:
                 logger.exception(err)
                 return
-            # print("-----------------------------------")
-            # print(raw_data)
-            # print("-----------------------------------")
             # test = connector.parse_genre_data(raw_data)
-            # print("0000000000000000000000000000")
-            # print(test)
             return {
                 "connector": connector,
                 "results": connector.parse_genre_data(raw_data),
@@ -138,8 +120,7 @@ async def async_connector_genre_info(items):
         results = await asyncio.gather(*tasks)
 
         # final_results = (results, items[1])
-        # print("=-=-=-=-=-=-=-=-")
-        # print(final_results)
+
         return results
 
 
@@ -193,10 +174,7 @@ def search_genre(
     for connector in get_connectors():
 
         valid_categories = get_external_genres_specific_connector(connector)
-        print(valid_categories)
-        for i in valid_categories:
-            print(i["results"].description)
-        print("#######################^^^^^^^^^^^^^^^^^^^")
+
         # get the search url from the connector before sending
         url = connector.get_search_url_genre(genres, button_selection, valid_categories)
         try:
@@ -205,9 +183,7 @@ def search_genre(
             # if this URL is invalid we should skip it and move on
             logger.info("Request denied to blocked domain: %s", url)
             continue
-        # print("---------------This URL is valid---------------")
-        # print(url)
-        # print("--------------------------------------------")
+
         items.append((url, connector))
 
     # load as many results as we can
@@ -239,9 +215,7 @@ def get_external_genres():
 
     # fin_results.append(([r for r in results[0] if r], results[1]))
     fin_results = [r for r in results if r]
-    for i in fin_results:
-        print("ELEMENT OF TUPLE ---------------- ")
-        print(i)
+
     return fin_results
 
 
@@ -260,9 +234,6 @@ def get_external_genres_specific_connector(connector):
 
     fin_results = [r for r in results if r]
 
-    for i in fin_results:
-        print("ELEMENT OF TUPLE ---------------- ")
-        print(i)
     return fin_results
 
 

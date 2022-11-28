@@ -89,7 +89,6 @@ def get_valid_genres(ext_gens):
                 description=i["results"].description,
             )
         )
-        # print(i["results"].description)
 
     return cate_list
 
