@@ -32,7 +32,7 @@ class Search(View):
             return api_book_search(request)
 
         local_gens = list(models.Genre.objects.all())
-        #ext_gens = connector_manager.get_external_genres()
+        # ext_gens = connector_manager.get_external_genres()
 
         query = request.GET.get("q")
         genre_query = request.GET.get("genres")
@@ -89,6 +89,7 @@ def get_valid_genres(ext_gens, local_gens):
         )
 
     return final_list
+
 
 def get_ext_gen_id(gen_url):
     """Try to get the genre ID from the url"""

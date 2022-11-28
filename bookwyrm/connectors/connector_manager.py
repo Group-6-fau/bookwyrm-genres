@@ -201,6 +201,9 @@ def search_genre(
 
 def get_external_genres():
     """Get information from federated bookwyrm instances."""
+    # The idea here was to get unique genres to show up from
+    # other instances, but it proved to be too much for me.
+    # This remains unused.
     results = []
     fin_results = []
     items = []
@@ -220,6 +223,9 @@ def get_external_genres():
 
 def get_external_genres_specific_connector(connector):
     """Get information from a single federated bookwyrm instances."""
+    # The idea here was to get unique genres to show up from
+    # other instances, but it proved to be too much for me.
+    # This remains unused.
     results = []
     fin_results = []
     items = []
