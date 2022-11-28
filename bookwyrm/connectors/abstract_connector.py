@@ -247,7 +247,7 @@ def resolve_genre_id(instance_genre, external_genres):
     gen_id = instance_genre.pk
     for cat in external_genres:
         if cat["results"].name == instance_genre.name:
-            return get_ext_gen_id(cat["results"].id)
+            return cat["results"].id[-1]
 
     return str(gen_id)
 
