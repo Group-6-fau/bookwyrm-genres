@@ -39,27 +39,23 @@ def search_genre(active_genres, search_active_option):
 
     # Check if there's actually a genre selected.
     if len(active_genres):
-
+        base_qs = models.Work.objects.all()
         results = []
         # AND Searching
         if search_active_option == "search_and":
 
             print("Searching using AND")
-            base_qs = models.Work.objects.all()
             for gen in active_genres:
                 results = base_qs.filter(genres__pk__contains=gen)
             results = get_first_edition_gen(results)
         # OR searching
         elif search_active_option == "search_or":
 
-            for gen in active_genres:
-                print("Item successful captured!")
-                results.extend(models.Work.objects.filter(genres=gen))
-                results = get_first_edition_gen(results)
+            results.extend(base_qs.filter(genres__pk__in=active_genres).distinct())
+            results = get_first_edition_gen(results)
         # EXCLUDE searching
         elif search_active_option == "search_exclude":
-            base_qs = models.Work.objects.all()
-            results = models.Work.objects.exclude(genres__pk__in=active_genres)
+            results = base_qs.exclude(genres__pk__in=active_genres)
             results = get_first_edition_gen(results)
 
         print("Printing this enter:" + active_genres[0])

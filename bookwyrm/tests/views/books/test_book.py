@@ -147,8 +147,6 @@ class BookViews(TestCase):
         request.user = self.local_user
         with patch("bookwyrm.views.books.books.is_api_request") as is_api:
             is_api.return_value = False
-            print("HERES THE ID------:")
-            print(self.work.id)
             result = view(request, self.work.id)
         validate_html(result.render())
         self.assertEqual(result.status_code, 200)

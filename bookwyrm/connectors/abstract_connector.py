@@ -61,9 +61,6 @@ class AbstractMinimalConnector(ABC):
             genre_extension += "&genres=" + resolve_genre_id(
                 models.Genre.objects.get(pk=gen), external_categories
             )
-        # print("---------------get_search_url---------------")
-        # print(self.search_url)
-        # print("--------------------------------------------")
         final_url = self.search_url + type_selection + genre_extension
         return final_url
 
@@ -250,9 +247,23 @@ def resolve_genre_id(instance_genre, external_genres):
     gen_id = instance_genre.pk
     for cat in external_genres:
         if cat["results"].name == instance_genre.name:
-            return cat["results"].id[-1]
+            return get_ext_gen_id(cat["results"].id)
 
     return str(gen_id)
+
+
+def get_ext_gen_id(gen_url):
+    """Try to get the genre ID from the url"""
+    gen_last_url = gen_url[-3:]
+    print(gen_last_url)
+    gen_id = ""
+
+    for url_char in gen_last_url:
+        if url_char.isdigit():
+            gen_id = gen_id + url_char
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(gen_id)
+    return gen_id
 
 
 def dict_from_mappings(data, mappings):
@@ -286,9 +297,7 @@ def get_data(url, params=None, timeout=settings.QUERY_TIMEOUT):
             timeout=timeout,
         )
     except RequestException as err:
-        print("##################################")
         logger.info(err)
-        print("##################################")
         raise ConnectorException(err)
 
     if not resp.ok:
@@ -296,9 +305,7 @@ def get_data(url, params=None, timeout=settings.QUERY_TIMEOUT):
     try:
         data = resp.json()
     except ValueError as err:
-        print("---------------------------------")
         logger.info(err)
-        print("---------------------------------")
         raise ConnectorException(err)
 
     return data

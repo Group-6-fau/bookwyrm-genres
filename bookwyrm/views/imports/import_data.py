@@ -61,10 +61,7 @@ class Import(View):
 
         form = forms.ImportForm(request.POST, request.FILES)
 
-        print("Importing this book WOOO!!!")
-
         if not form.is_valid():
-            print("Something went horribly wrong!")
             return HttpResponseBadRequest()
 
         include_reviews = request.POST.get("include_reviews") == "on"
