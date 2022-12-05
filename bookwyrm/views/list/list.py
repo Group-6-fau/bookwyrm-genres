@@ -254,21 +254,24 @@ def genre_suggestion(request):
     """genre suggestion"""
     name = request.POST.get("name")
     description = request.POST.get("description")
-
-    if suggestions.SuggestedGenre.objects.filter(name=name).exists():
-        suggestion = suggestions.SuggestedGenre.objects.get(name=name)
-        if request.user not in suggestion.users.all():
-            suggestion.votes += 1
-            suggestion.users.add(request.user)
-            suggestion.save()
-            suggestion.auto_approve()
+    if models.Genre.objects.filter(genre_name=name).exists():
+        return redirect("genres")
 
     else:
-        genre_vote = suggestions.SuggestedGenre.objects.create(
-            name=name, description=description
-        )
-        genre_vote.users.add(request.user)
-        genre_vote.save()
+        if suggestions.SuggestedGenre.objects.filter(name=name).exists():
+            suggestion = suggestions.SuggestedGenre.objects.get(name=name)
+            if request.user not in suggestion.users.all():
+                suggestion.votes += 1
+                suggestion.users.add(request.user)
+                suggestion.save()
+                suggestion.auto_approve()
+
+        else:
+            genre_vote = suggestions.SuggestedGenre.objects.create(
+                name=name, description=description
+            )
+            genre_vote.users.add(request.user)
+            genre_vote.save()
 
     return redirect("genres")
 
