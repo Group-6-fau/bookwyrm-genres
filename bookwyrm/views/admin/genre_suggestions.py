@@ -1,31 +1,23 @@
-from django.contrib.postgres.search import TrigramSimilarity
+"""This view will handle all things related to genre suggestions."""
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.db.models import Q
+from django.views import View
+from django.views.generic import (
+    ListView,
+    UpdateView,
+    DeleteView,
+)
 
-from django.shortcuts import get_object_or_404, render
-
-from bookwyrm.models.book import Genre, Book, Edition
+from bookwyrm.models.book import Genre, Edition
 from bookwyrm.models.suggestions import (
     SuggestedGenre,
     MinimumVotesSetting,
     SuggestedBookGenre,
 )
 from bookwyrm.forms import SuggestionForm
-from django.shortcuts import redirect
-
-from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-from django.db.models.functions import Greatest
-from django.db.models import Q
-from django.http import JsonResponse
-from django.template.response import TemplateResponse
-from django.views import View
-from django.views.generic import (
-    CreateView,
-    ListView,
-    UpdateView,
-    DeleteView,
-)
 
 
 class GenreSuggestionsHome(ListView):
@@ -43,17 +35,16 @@ class GenreSuggestionsHome(ListView):
             else:
                 ordering = order
             return ordering
-        else:
-            ordering = ["name"]
-            return ordering
+        ordering = ["name"]
+        return ordering
 
     def get(self, request, *args, **kwargs):
         min_vote = request.GET.get("minimum_gen_vote")
         # If the minimum vote was modified, it'll read that and change as needed.
         if min_vote:
-            VotesSetting = MinimumVotesSetting.objects.get(id=1)
-            VotesSetting.minimum_genre_votes = min_vote
-            VotesSetting.save()
+            votes_setting = MinimumVotesSetting.objects.get(id=1)
+            votes_setting.minimum_genre_votes = min_vote
+            votes_setting.save()
         print(min_vote)
 
         return super().get(request, *args, **kwargs)
@@ -62,9 +53,9 @@ class GenreSuggestionsHome(ListView):
         if not MinimumVotesSetting.objects.all().exists():
             MinimumVotesSetting.objects.create()
 
-        VotesSetting = MinimumVotesSetting.objects.get(id=1)
+        votes_setting = MinimumVotesSetting.objects.get(id=1)
         context = super().get_context_data(**kwargs)
-        context["minimum_votes_get"] = VotesSetting.minimum_genre_votes
+        context["minimum_votes_get"] = votes_setting.minimum_genre_votes
         return context
 
 
@@ -72,6 +63,9 @@ class GenreSuggestionsHome(ListView):
 class ApproveSuggestion(View):
     """approve a genre suggestion"""
 
+    # pylint: disable=invalid-name
+    # pylint: disable=no-self-use
+    # pylint: disable=unused-argument
     def post(self, request, pk):
         """approve a genre"""
 
@@ -92,6 +86,8 @@ class ModifySuggestion(UpdateView):
 
 
 class RemoveSuggestion(DeleteView):
+    """Page to remove/reject a suggestion."""
+
     template_name = "settings/genres/suggestion_delete.html"
     model = SuggestedGenre
     success_url = reverse_lazy("settings-suggestions")
@@ -112,17 +108,16 @@ class BookGenreSuggestionsHome(ListView):
             else:
                 ordering = order
             return ordering
-        else:
-            ordering = ["genre__genre_name"]
-            return ordering
+        ordering = ["genre__genre_name"]
+        return ordering
 
     def get(self, request, *args, **kwargs):
         min_vote = request.GET.get("minimum_gen_vote")
         # If the minimum vote was modified, it'll read that and change as needed.
         if min_vote:
-            VotesSetting = MinimumVotesSetting.objects.get(id=1)
-            VotesSetting.minimum_book_votes = min_vote
-            VotesSetting.save()
+            votes_setting = MinimumVotesSetting.objects.get(id=1)
+            votes_setting.minimum_book_votes = min_vote
+            votes_setting.save()
         print(min_vote)
 
         return super().get(request, *args, **kwargs)
@@ -131,9 +126,9 @@ class BookGenreSuggestionsHome(ListView):
         if not MinimumVotesSetting.objects.all().exists():
             MinimumVotesSetting.objects.create()
 
-        VotesSetting = MinimumVotesSetting.objects.get(id=1)
+        votes_setting = MinimumVotesSetting.objects.get(id=1)
         context = super().get_context_data(**kwargs)
-        context["minimum_votes_get"] = VotesSetting.minimum_book_votes
+        context["minimum_votes_get"] = votes_setting.minimum_book_votes
         return context
 
 
@@ -141,6 +136,9 @@ class BookGenreSuggestionsHome(ListView):
 class ApproveBookSuggestion(View):
     """approve a book genre suggestion"""
 
+    # pylint: disable=invalid-name
+    # pylint: disable=no-self-use
+    # pylint: disable=unused-argument
     def post(self, request, pk):
         """approve a genre"""
 
@@ -156,6 +154,8 @@ class ApproveBookSuggestion(View):
 
 
 class RemoveBookSuggestion(DeleteView):
+    """Remove a suggested genre for a book."""
+
     template_name = "settings/genres/book_suggestion_delete.html"
     model = SuggestedBookGenre
     success_url = reverse_lazy("settings-book-suggestions")

@@ -55,7 +55,7 @@ class EditBook(View):
         remove_authors = request.POST.getlist("remove_authors")
         for author_id in remove_authors:
             book.authors.remove(author_id)
-        
+
         remove_genres = request.POST.getlist("remove_genres")
         work = book.parent_work
         for genre_id in remove_genres:

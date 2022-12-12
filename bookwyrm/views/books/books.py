@@ -4,12 +4,8 @@ from uuid import uuid4
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from django.db.models import Avg, Q
-from django.template import loader
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, get_list_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.views import View
 from django.views.decorators.http import require_POST
@@ -20,7 +16,6 @@ from bookwyrm.connectors import connector_manager, ConnectorException
 from bookwyrm.connectors.abstract_connector import get_image
 from bookwyrm.settings import PAGE_LENGTH
 from bookwyrm.views.helpers import is_api_request, maybe_redirect_local_path
-from bookwyrm.forms.forms import VoteForm
 from bookwyrm.models import suggestions
 
 
@@ -28,10 +23,10 @@ from bookwyrm.models import suggestions
 class Book(View):
     """a book! this is the stuff"""
 
+    # pylint: disable=too-many-locals
     def get(self, request, book_id, **kwargs):
         """info about a book"""
         if is_api_request(request):
-            print("HOOOLY SHIT IT'S THE HECKIN ACTIVITYPUB JSON OH NO NO NO ACTIVITYPUB BROS")
             book = get_object_or_404(
                 models.Book.objects.select_subclasses(), id=book_id
             )
@@ -43,13 +38,22 @@ class Book(View):
             else False
         )
 
-        book = get_object_or_404(models.Edition, id=book_id)
-        work = book.parent_work
+        # pylint: disable=broad-except
+        try:
+            # Sometimes, this could fail! We don't want that now, right?
+            # If it fails--which it should never do outside python tests--we'll
+            # just make the genre suggestion list empty.
+            book = get_object_or_404(models.Edition, id=book_id)
 
-        we = work.genres.all()
-        w = list(we)
-
-        genre_list = models.Genre.objects.filter(~Q(genre_name__in=w))
+            genre_list = models.Genre.objects.filter(
+                ~Q(genre_name__in=list(book.parent_work.genres.all()))
+            )
+        except models.Edition.DoesNotExist:
+            print("We couldn't find this object!")
+            genre_list = []
+        except Exception:
+            print("Something went VERY wrong!")
+            genre_list = []
 
         # it's safe to use this OR because edition and work and subclasses of the same
         # table, so they never have clashing IDs
@@ -201,9 +205,9 @@ def genre_vote(request):
     """genre vote"""
     genres = request.POST.get("genres")
 
-    genre_vote = suggestions.SuggestedBookGenre(genre=genres)
+    int_genre_vote = suggestions.SuggestedBookGenre(genre=genres)
 
-    genre_vote.save()
+    int_genre_vote.save()
 
     book = get_object_or_404(models.Edition, id=request.POST.get("book_id"))
 
@@ -218,7 +222,7 @@ def genre_vote(request):
 def resolve_book(request):
     """figure out the local path to a book from a remote_id"""
     remote_id = request.POST.get("remote_id")
-    print(remote_id)
+    # print(remote_id)
     connector = connector_manager.get_or_create_connector(remote_id)
     book = connector.get_or_create_book(remote_id)
 

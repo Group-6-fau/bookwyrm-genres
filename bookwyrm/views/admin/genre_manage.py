@@ -1,22 +1,14 @@
-from django.contrib.postgres.search import TrigramSimilarity
-
-from django.shortcuts import get_object_or_404, render
-
-from bookwyrm.models.book import Genre, Book
-from bookwyrm.forms import GenreForm
-
+"""All the views that lets us modify genres."""
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-from django.db.models.functions import Greatest
-from django.http import JsonResponse
-from django.template.response import TemplateResponse
-from django.views import View
 from django.views.generic import (
     CreateView,
     ListView,
     UpdateView,
     DeleteView,
 )
+
+from bookwyrm.models.book import Genre
+from bookwyrm.forms import GenreForm
 
 
 class ManageGenreHome(ListView):
@@ -38,6 +30,8 @@ class ModifyGenre(UpdateView):
 
 
 class CreateGenre(CreateView):
+    """Page for creating a new genre."""
+
     template_name = "settings/genres/genre_add.html"
     model = Genre
     form_class = GenreForm
@@ -45,6 +39,8 @@ class CreateGenre(CreateView):
 
 
 class RemoveGenre(DeleteView):
+    "Page for removing a genre."
+
     template_name = "settings/genres/genre_delete.html"
     model = Genre
     success_url = reverse_lazy("settings-genres")

@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 env = Env()
 env.read_env()
 DOMAIN = env("DOMAIN")
-VERSION = "0.5.1"
+VERSION = "0.5.3"
 
 RELEASE_API = env(
     "RELEASE_API",
@@ -21,7 +21,7 @@ RELEASE_API = env(
 PAGE_LENGTH = env("PAGE_LENGTH", 15)
 DEFAULT_LANGUAGE = env("DEFAULT_LANGUAGE", "English")
 
-JS_CACHE = "e678183c"
+JS_CACHE = "ad848b97"
 
 # email
 EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
@@ -313,7 +313,7 @@ USE_TZ = True
 
 
 agent = requests.utils.default_user_agent()
-#REPLACE WITH HTTPS
+# REPLACE WITH HTTPS
 USER_AGENT = f"{agent} (BookWyrm/{VERSION}; +https://{DOMAIN}/)"
 
 # Imagekit generated thumbnails
@@ -393,3 +393,7 @@ DEFAULT_GENRES = {
     "Political": "Stories that provide commentary on political events, systems, and theories through a narrative tone.",
     "Health & Fitness": "Exercises and other things one can do to keep their body healthy and fit.",
 }
+
+HTTP_X_FORWARDED_PROTO = env.bool("SECURE_PROXY_SSL_HEADER", False)
+if HTTP_X_FORWARDED_PROTO:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

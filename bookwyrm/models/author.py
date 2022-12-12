@@ -24,6 +24,9 @@ class Author(BookDataModel):
     gutenberg_id = fields.CharField(
         max_length=255, blank=True, null=True, deduplication_field=True
     )
+    isfdb = fields.CharField(
+        max_length=255, blank=True, null=True, deduplication_field=True
+    )
     # idk probably other keys would be useful here?
     born = fields.DateTimeField(blank=True, null=True)
     died = fields.DateTimeField(blank=True, null=True)
@@ -60,9 +63,14 @@ class Author(BookDataModel):
         """generate the url from the openlibrary id"""
         return f"https://openlibrary.org/authors/{self.openlibrary_key}"
 
+    @property
+    def isfdb_link(self):
+        """generate the url from the isni id"""
+        return f"https://www.isfdb.org/cgi-bin/ea.cgi?{self.isfdb}"
+
     def get_remote_id(self):
         """editions and works both use "book" instead of model_name"""
-        #REPLACE WITH HTTPS
+        # REPLACE WITH HTTPS
         return f"https://{DOMAIN}/author/{self.id}"
 
     activity_serializer = activitypub.Author

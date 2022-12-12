@@ -10,6 +10,7 @@ register = template.Library()
 
 @register.filter(name="followed")
 def followed(user, genre):
+    """See which genres we're following"""
     return user.followed_genres.filter(genre_name=genre.genre_name).count() > 0
 
 

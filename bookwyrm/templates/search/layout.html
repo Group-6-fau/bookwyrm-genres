@@ -7,9 +7,7 @@
 
 {% block content %}
 
-<head>
-    <script src="{% static "js/jquery-1.8.3.js" %}?v={{ js_cache }}"></script>
-</head>
+<script src="{% static "js/jquery-1.8.3.js" %}?v={{ js_cache }}"></script>
 
 <script type="text/javascript">
     $(function() {
@@ -74,8 +72,10 @@
     <div class="field" id="gen-search-bar">
 
         <div class="control">
+            <!-- <input type="checkbox" id="ext_gens" name="ext_gens" value="External Genre">
+            <label for="ext_gens">Show External Genres</label><br> -->
             <label class="radio">
-                <input type="radio" name="search_buttons" value="search_and" {% if btn_select == "search_and" %}checked{% endif %}>
+                <input type="radio" name="search_buttons" value="search_and" checked {% if btn_select == "search_and" %}checked{% endif %}>
                 Must include all selected genres
             </label>
             <label class="radio">
@@ -104,10 +104,10 @@
 {% if query or gen_query%}
 <nav class="tabs">
     <ul>
-        <li{% if type == "book" %} class="is-active"{% endif %}>
+        <li{% if type == "book" or type == "genre" %} class="is-active"{% endif %}>
             <a href="{% url 'search' %}?q={{ query }}&type=book">{% trans "Books" %}</a>
         </li>
-        <li{% if type == "genre" %} class="is-active"{% endif %}>
+        <!--<li{% if type == "genre" %} class="is-active"{% endif %}>
             <a href="{% url 'search' %}?q=&type=genre&search_buttons={{ btn_select }}
 
             {% for genrenum in gen_list %}
@@ -115,7 +115,7 @@
             {% endfor %}
 
             ">{% trans "Genres" %}</a>
-        </li>
+        </li> -->
         {% if request.user.is_authenticated %}
         <li{% if type == "user" %} class="is-active"{% endif %}>
             <a href="{% url 'search' %}?q={{ query }}&type=user">{% trans "Users" %}</a>

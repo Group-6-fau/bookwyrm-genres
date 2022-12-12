@@ -18,6 +18,12 @@ def email_data():
     }
 
 
+def test_email(user):
+    """Just an admin checking if emails are sending"""
+    data = email_data()
+    send_email(user.email, *format_email("test", data))
+
+
 def email_confirmation_email(user):
     """newly registered users confirm email address"""
     data = email_data()
@@ -38,7 +44,7 @@ def password_reset_email(reset_code):
     data = email_data()
     data["reset_link"] = reset_code.link
     data["user"] = reset_code.user.display_name
-    send_email.delay(reset_code.user.email, *format_email("password_reset", data))
+    send_email(reset_code.user.email, *format_email("password_reset", data))
 
 
 def moderation_report_email(report):
