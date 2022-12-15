@@ -509,7 +509,6 @@ def get_or_create_remote_server(domain, refresh=False):
         pass
 
     try:
-        # REPLACE WITH HTTPS
         data = get_data(f"https://{domain}/.well-known/nodeinfo")
         try:
             nodeinfo_url = data.get("links")[0].get("href")

@@ -70,7 +70,6 @@ class Author(BookDataModel):
 
     def get_remote_id(self):
         """editions and works both use "book" instead of model_name"""
-        # REPLACE WITH HTTPS
         return f"https://{DOMAIN}/author/{self.id}"
 
     activity_serializer = activitypub.Author

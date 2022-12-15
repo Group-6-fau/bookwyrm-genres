@@ -45,8 +45,6 @@ class Search(View):
         if query and not search_type:
             search_type = "user" if "@" in query else "book"
 
-        print("Looking up this type: " + search_type)
-
         endpoints = {
             "book": book_search,
             "user": user_search,
@@ -131,7 +129,6 @@ def api_book_search_genres(request):
 def genre_search(request):
     """The main course.
     Look for books based on genres."""
-    print("Entered the genre search function")
 
     if is_api_request(request):
         return api_book_search_genres(request)

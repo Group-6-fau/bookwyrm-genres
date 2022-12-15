@@ -44,7 +44,6 @@ def search_genre(active_genres, search_active_option):
         # AND Searching
         if search_active_option == "search_and":
 
-            print("Searching using AND")
             for gen in active_genres:
                 results = base_qs.filter(genres__pk__contains=gen)
             results = get_first_edition_gen(results)
@@ -58,14 +57,8 @@ def search_genre(active_genres, search_active_option):
             results = base_qs.exclude(genres__pk__in=active_genres)
             results = get_first_edition_gen(results)
 
-        print("Printing this enter:" + active_genres[0])
-        for item in results:
-            print(item)
-        print("Active books successful")
-
     else:
         results = []
-        print("Empty List")
 
     return results
 
