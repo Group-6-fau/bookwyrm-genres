@@ -107,7 +107,7 @@ def api_book_search(request, search_type):
         genre_list = request.GET.getlist("genres")
         button_selection = request.GET.get("search_buttons")
         # only return local book results via json so we don't cascade
-        book_results = search_genre(genre_list, button_selection) 
+        book_results = search_genre(genre_list, button_selection)
 
     else:
 
@@ -120,7 +120,6 @@ def api_book_search(request, search_type):
     return JsonResponse(
         [format_search_result(r) for r in book_results[:10]], safe=False
     )
-
 
 
 def genre_search(request):
