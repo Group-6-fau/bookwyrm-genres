@@ -127,7 +127,7 @@ def genre_search(request):
     Look for books based on genres."""
 
     if is_api_request(request):
-        return api_book_search_genres(request)
+        return api_book_search(request, search_type="genre")
 
     genre_list = request.GET.getlist("genres")
     button_selection = request.GET.get("search_buttons")
