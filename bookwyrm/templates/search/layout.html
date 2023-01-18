@@ -134,8 +134,11 @@
 <section class="block" id="search-results-block">
     <p class="block">
         {% if not results %}
-           
-        <em>{% blocktrans %}No results found for "{{ query }}"{% endblocktrans %}</em>
+            {% if gen_query %}
+            <em>{% blocktrans %}No results found for these genres.{% endblocktrans %}</em>
+            {% else %}
+            <em>{% blocktrans %}No results found for "{{ query }}"{% endblocktrans %}</em>
+            {% endif %}
         {% else %}
         <em>{% blocktrans trimmed count counter=results.paginator.count with result_count=results.paginator.count|intcomma %}
             {{ result_count }} result found
