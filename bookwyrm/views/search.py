@@ -27,9 +27,7 @@ class Search(View):
         search_type = request.GET.get("type")
 
         if is_api_request(request):
-            if search_type == "genre":
-                return api_book_search_genres(request)
-            return api_book_search(request)
+            return api_book_search(request, search_type)
 
         local_gens = list(models.Genre.objects.all())
         # ext_gens = connector_manager.get_external_genres()
@@ -102,28 +100,27 @@ def get_ext_gen_id(gen_url):
     return gen_id
 
 
-def api_book_search(request):
+def api_book_search(request, search_type):
     """Return books via API response"""
-    query = request.GET.get("q")
-    query = isbn_check(query)
-    min_confidence = request.GET.get("min_confidence", 0)
-    # only return local book results via json so we don't cascade
-    book_results = search(query, min_confidence=min_confidence)
+    if search_type == "genre":
+
+        genre_list = request.GET.getlist("genres")
+        button_selection = request.GET.get("search_buttons")
+        # only return local book results via json so we don't cascade
+        book_results = search_genre(genre_list, button_selection) 
+
+    else:
+
+        query = request.GET.get("q")
+        query = isbn_check(query)
+        min_confidence = request.GET.get("min_confidence", 0)
+        # only return local book results via json so we don't cascade
+        book_results = search(query, min_confidence=min_confidence)
+
     return JsonResponse(
         [format_search_result(r) for r in book_results[:10]], safe=False
     )
 
-
-# TODO: This can be refactored. We'll merge this into api_book_search later.
-def api_book_search_genres(request):
-    """Return books via API response"""
-    genre_list = request.GET.getlist("genres")
-    button_selection = request.GET.get("search_buttons")
-    # only return local book results via json so we don't cascade
-    book_results = search_genre(genre_list, button_selection)
-    return JsonResponse(
-        [format_search_result(r) for r in book_results[:10]], safe=False
-    )
 
 
 def genre_search(request):
