@@ -8,12 +8,7 @@ import redis
 from celerywyrm import settings
 from bookwyrm.tasks import app as celery
 
-r = redis.Redis(
-    host=settings.REDIS_BROKER_HOST,
-    port=settings.REDIS_BROKER_PORT,
-    password=settings.REDIS_BROKER_PASSWORD,
-    db=settings.REDIS_BROKER_DB_INDEX,
-)
+r = redis.from_url(settings.REDIS_BROKER_URL)
 
 # pylint: disable= no-self-use
 @method_decorator(login_required, name="dispatch")
@@ -41,6 +36,7 @@ class CeleryStatus(View):
                 "low_priority": r.llen("low_priority"),
                 "medium_priority": r.llen("medium_priority"),
                 "high_priority": r.llen("high_priority"),
+                "imports": r.llen("imports"),
             }
         # pylint: disable=broad-except
         except Exception as err:
