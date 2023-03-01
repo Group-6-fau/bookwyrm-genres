@@ -7,12 +7,10 @@ from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField, CICharField
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.dispatch import receiver
 from django.db import models, transaction
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import PermissionDenied
 from model_utils import FieldTracker
 
 from bookwyrm import activitypub
