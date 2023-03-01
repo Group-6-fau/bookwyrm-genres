@@ -1,5 +1,6 @@
 """ functionality outline for a book data connector """
 from abc import ABC, abstractmethod
+from urllib.parse import quote_plus
 import imghdr
 import logging
 import re
@@ -49,8 +50,7 @@ class AbstractMinimalConnector(ABC):
             return f"{self.isbn_search_url}{normalized_query}"
         # NOTE: previously, we tried searching isbn and if that produces no results,
         # searched as free text. This, instead, only searches isbn if it's isbn-y
-
-        return f"{self.search_url}{query}"
+        return f"{self.search_url}{quote_plus(query)}"
 
     def get_search_url_genre(self, genres, button_selection, external_categories):
         """format the query url"""

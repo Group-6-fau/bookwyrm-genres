@@ -1,12 +1,14 @@
 """ celery status """
 from django.contrib.auth.decorators import login_required, permission_required
+from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.http import require_GET
 import redis
 
 from celerywyrm import settings
-from bookwyrm.tasks import app as celery
+from bookwyrm.tasks import app as celery, LOW, MEDIUM, HIGH, IMPORTS, BROADCAST
 
 r = redis.from_url(settings.REDIS_BROKER_URL)
 
@@ -33,10 +35,11 @@ class CeleryStatus(View):
 
         try:
             queues = {
-                "low_priority": r.llen("low_priority"),
-                "medium_priority": r.llen("medium_priority"),
-                "high_priority": r.llen("high_priority"),
-                "imports": r.llen("imports"),
+                LOW: r.llen(LOW),
+                MEDIUM: r.llen(MEDIUM),
+                HIGH: r.llen(HIGH),
+                IMPORTS: r.llen(IMPORTS),
+                BROADCAST: r.llen(BROADCAST),
             }
         # pylint: disable=broad-except
         except Exception as err:
@@ -50,3 +53,18 @@ class CeleryStatus(View):
             "errors": errors,
         }
         return TemplateResponse(request, "settings/celery.html", data)
+
+
+@require_GET
+# pylint: disable=unused-argument
+def celery_ping(request):
+    """Just tells you if Celery is on or not"""
+    try:
+        ping = celery.control.inspect().ping()
+        if ping:
+            return HttpResponse()
+    # pylint: disable=broad-except
+    except Exception:
+        pass
+
+    return HttpResponse(status=500)
