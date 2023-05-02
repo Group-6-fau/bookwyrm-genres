@@ -124,7 +124,7 @@ class AbstractMinimalConnector(ABC):
         except aiohttp.ClientError as err:
             logger.info(err)
 
-    async def get_genres_info(session, url, connector):
+    async def get_genres_info(self, session, url, connector):
         """try this specific connector"""
         # pylint: disable=line-too-long
         headers = {
