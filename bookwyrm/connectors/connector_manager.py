@@ -22,70 +22,6 @@ class ConnectorException(HTTPError):
     """when the connector can't do what was asked"""
 
 
-async def get_results(session, url, min_confidence, query, connector):
-    """try this specific connector"""
-    # pylint: disable=line-too-long
-    headers = {
-        "Accept": (
-            'application/json, application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"; charset=utf-8'
-        ),
-        "User-Agent": USER_AGENT,
-    }
-    params = {"min_confidence": min_confidence}
-    try:
-        async with session.get(url, headers=headers, params=params) as response:
-            if not response.ok:
-                logger.info("Unable to connect to %s: %s", url, response.reason)
-                return
-
-            try:
-                raw_data = await response.json()
-            except aiohttp.client_exceptions.ContentTypeError as err:
-                logger.exception(err)
-                return
-            return {
-                "connector": connector,
-                "results": connector.process_search_response(
-                    query, raw_data, min_confidence
-                ),
-            }
-    except asyncio.TimeoutError:
-        logger.info("Connection timed out for url: %s", url)
-    except aiohttp.ClientError as err:
-        logger.info(err)
-
-
-async def get_genres_info(session, url, connector):
-    """try this specific connector"""
-    # pylint: disable=line-too-long
-    headers = {
-        "Accept": (
-            'application/json, application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"; charset=utf-8'
-        ),
-        "User-Agent": USER_AGENT,
-    }
-    params = {"min_confidence": ""}
-    try:
-        async with session.get(url, headers=headers, params=params) as response:
-            if not response.ok:
-                logger.info("Unable to connect to %s: %s", url, response.reason)
-                return
-
-            try:
-                raw_data = await response.json()
-            except aiohttp.client_exceptions.ContentTypeError as err:
-                logger.exception(err)
-                return
-            return {
-                "connector": connector,
-                "results": connector.parse_genre_data(raw_data),
-            }
-    except asyncio.TimeoutError:
-        logger.info("Connection timed out for url: %s", url)
-    except aiohttp.ClientError as err:
-        logger.info(err)
-
-
 async def async_connector_search(query, items, min_confidence):
     """Try a number of requests simultaneously"""
     timeout = aiohttp.ClientTimeout(total=SEARCH_TIMEOUT)
@@ -112,7 +48,7 @@ async def async_connector_genre_info(items):
             for actual_url in url:
                 tasks.append(
                     asyncio.ensure_future(
-                        get_genres_info(session, actual_url, connector)
+                        connector.get_genres_info(session, actual_url, connector)
                     )
                 )
 

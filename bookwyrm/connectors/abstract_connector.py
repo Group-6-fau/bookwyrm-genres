@@ -124,6 +124,36 @@ class AbstractMinimalConnector(ABC):
         except aiohttp.ClientError as err:
             logger.info(err)
 
+    async def get_genres_info(session, url, connector):
+        """try this specific connector"""
+        # pylint: disable=line-too-long
+        headers = {
+            "Accept": (
+                'application/json, application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"; charset=utf-8'
+            ),
+            "User-Agent": USER_AGENT,
+        }
+        params = {"min_confidence": ""}
+        try:
+            async with session.get(url, headers=headers, params=params) as response:
+                if not response.ok:
+                    logger.info("Unable to connect to %s: %s", url, response.reason)
+                    return
+
+                try:
+                    raw_data = await response.json()
+                except aiohttp.client_exceptions.ContentTypeError as err:
+                    logger.exception(err)
+                    return
+                return {
+                    "connector": connector,
+                    "results": connector.parse_genre_data(raw_data),
+                }
+        except asyncio.TimeoutError:
+            logger.info("Connection timed out for url: %s", url)
+        except aiohttp.ClientError as err:
+            logger.info(err)
+
     @abstractmethod
     def get_or_create_book(self, remote_id):
         """pull up a book record by whatever means possible"""
