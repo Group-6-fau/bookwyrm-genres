@@ -34,6 +34,7 @@ class Status(OrderedCollectionPageMixin, BookWyrmModel):
     raw_content = models.TextField(blank=True, null=True)
     mention_users = fields.TagField("User", related_name="mention_user")
     mention_books = fields.TagField("Edition", related_name="mention_book")
+    mention_hashtags = fields.TagField("Hashtag", related_name="mention_hashtag")
     local = models.BooleanField(default=True)
     content_warning = fields.CharField(
         max_length=500, blank=True, null=True, activitypub_field="summary"
@@ -115,10 +116,16 @@ class Status(OrderedCollectionPageMixin, BookWyrmModel):
         return list(set(mentions))
 
     @classmethod
-    def ignore_activity(cls, activity):  # pylint: disable=too-many-return-statements
+    def ignore_activity(
+        cls, activity, allow_external_connections=True
+    ):  # pylint: disable=too-many-return-statements
         """keep notes if they are replies to existing statuses"""
         if activity.type == "Announce":
-            boosted = activitypub.resolve_remote_id(activity.object, get_activity=True)
+            boosted = activitypub.resolve_remote_id(
+                activity.object,
+                get_activity=True,
+                allow_external_connections=allow_external_connections,
+            )
             if not boosted:
                 # if we can't load the status, definitely ignore it
                 return True

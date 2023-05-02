@@ -12,7 +12,7 @@ from django.db.models import signals
 from requests import HTTPError
 
 from bookwyrm import book_search, models
-from bookwyrm.settings import SEARCH_TIMEOUT, USER_AGENT
+from bookwyrm.settings import SEARCH_TIMEOUT
 from bookwyrm.tasks import app, LOW
 
 logger = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ async def async_connector_search(query, items, min_confidence):
         for url, connector in items:
             tasks.append(
                 asyncio.ensure_future(
-                    get_results(session, url, min_confidence, query, connector)
+                    connector.get_results(session, url, min_confidence, query)
                 )
             )
 
